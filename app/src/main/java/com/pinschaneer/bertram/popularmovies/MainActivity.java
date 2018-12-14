@@ -5,10 +5,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.pinschaneer.bertram.popularmovies.data.MovieResultData;
+import com.pinschaneer.bertram.popularmovies.utilities.MovieDBJsonUtils;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     TextView mMovieDisplayTextView;
@@ -46,7 +49,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String movieData) {
             if (movieData != null) {
-                mMovieDisplayTextView.setText(movieData);
+                ArrayList<MovieResultData> movieDataList = MovieDBJsonUtils.getMovieResults(movieData);
+                StringBuilder sb = new StringBuilder();
+                for (MovieResultData movie : movieDataList) {
+                    sb.append(movie.toString() + "\n\n");
+                }
+
+                mMovieDisplayTextView.setText(sb.toString());
 
             }
         }
