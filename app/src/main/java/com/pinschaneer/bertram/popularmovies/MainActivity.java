@@ -1,8 +1,8 @@
 package com.pinschaneer.bertram.popularmovies;
 
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
@@ -17,14 +17,38 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mMovieDisplayTextView = findViewById(R.id.tv_movie_display);
-        URL movieDbUrl = NetworkUtils.buildUrl("popular");
-        try {
-            String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
-            if (response != null) {
-                mMovieDisplayTextView.setText(response);
+
+        loadMovieData();
+    }
+
+    private void loadMovieData() {
+        new FetchMovieDataTask().execute("popular");
+    }
+
+    public class FetchMovieDataTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... searchParams) {
+            if (searchParams.length == 0) {
+                return null;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0]);
+            try {
+                String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
+                return response;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String movieData) {
+            if (movieData != null) {
+                mMovieDisplayTextView.setText(movieData);
+
+            }
         }
     }
 }
