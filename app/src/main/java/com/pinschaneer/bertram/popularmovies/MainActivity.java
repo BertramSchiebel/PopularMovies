@@ -74,14 +74,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         protected void onPostExecute(String movieData) {
             if (movieData != null) {
                 ArrayList<MovieResultData> movieDataList = MovieDBJsonUtils.getMovieResults(movieData);
-                StringBuilder sb = new StringBuilder();
-                for (MovieResultData movie : movieDataList) {
-                    sb.append(movie.toString() + "\n\n");
-                }
-                MovieResultData[] dataArray = new MovieResultData[movieDataList.size()];
-                dataArray = movieDataList.toArray(dataArray);
-
-                mMovieListAdapter.setMovieData(dataArray);
+                mMovieListAdapter.setMovieData(movieDataList);
 
             }
         }

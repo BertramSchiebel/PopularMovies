@@ -10,10 +10,12 @@ import android.widget.TextView;
 
 import com.pinschaneer.bertram.popularmovies.data.MovieResultData;
 
+import java.util.ArrayList;
+
 class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapterViewHolder> {
 
     private final MovieListAdapterOnClickHandler mCLickHandler;
-    private MovieResultData[] mMovieDataList;
+    private ArrayList<MovieResultData> mMovieDataList;
 
     public MovieListAdapter(MovieListAdapterOnClickHandler clickHandler) {
         mCLickHandler = clickHandler;
@@ -32,18 +34,22 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
 
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
-        MovieResultData data = mMovieDataList[position];
-        holder.mMovieDataTextView.setText(data.toString());
+        MovieResultData data = mMovieDataList.get(position);
+        holder.mMovieDataTextView.setText(data.getTitle());
     }
 
     @Override
     public int getItemCount() {
         if (null == mMovieDataList) return 0;
-        return mMovieDataList.length;
+        return mMovieDataList.size();
     }
 
-    public void setMovieData(MovieResultData[] data) {
-        mMovieDataList = data;
+    public void setMovieData(ArrayList<MovieResultData> data) {
+        if (mMovieDataList == null) {
+            mMovieDataList = data;
+        } else {
+            mMovieDataList.addAll(data);
+        }
         notifyDataSetChanged();
     }
 
@@ -67,7 +73,7 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
-            MovieResultData data = mMovieDataList[position];
+            MovieResultData data = mMovieDataList.get(position);
             mCLickHandler.onClick(data);
 
         }
