@@ -1,9 +1,14 @@
 package com.pinschaneer.bertram.popularmovies;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pinschaneer.bertram.popularmovies.data.MovieResultData;
 import com.pinschaneer.bertram.popularmovies.utilities.MovieDBJsonUtils;
@@ -13,19 +18,38 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
-    TextView mMovieDisplayTextView;
+
+public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler {
+    private RecyclerView mMovieListRecyclerView;
+    private MovieListAdapter mMovieListAdapter;
+    private TextView mErrorMessageDisplay;
+    private ProgressBar mLoadingInidcattor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mMovieDisplayTextView = findViewById(R.id.tv_movie_display);
+
+        mMovieListRecyclerView = findViewById(R.id.rv_movie_list);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mMovieListRecyclerView.setLayoutManager(layoutManager);
+        mMovieListAdapter = new MovieListAdapter(this);
+        mMovieListRecyclerView.setAdapter(mMovieListAdapter);
+
+
 
         loadMovieData();
     }
 
     private void loadMovieData() {
         new FetchMovieDataTask().execute("popular");
+    }
+
+    @Override
+    public void onClick(MovieResultData movieData) {
+        Context context = this;
+        Toast.makeText(context, movieData.toString(), Toast.LENGTH_SHORT)
+                .show();
     }
 
     public class FetchMovieDataTask extends AsyncTask<String, Void, String> {
@@ -54,8 +78,10 @@ public class MainActivity extends AppCompatActivity {
                 for (MovieResultData movie : movieDataList) {
                     sb.append(movie.toString() + "\n\n");
                 }
+                MovieResultData[] dataArray = new MovieResultData[movieDataList.size()];
+                dataArray = movieDataList.toArray(dataArray);
 
-                mMovieDisplayTextView.setText(sb.toString());
+                mMovieListAdapter.setMovieData(dataArray);
 
             }
         }
