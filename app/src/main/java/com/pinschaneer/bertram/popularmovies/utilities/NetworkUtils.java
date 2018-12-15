@@ -22,12 +22,12 @@ public class NetworkUtils {
     private static final String API_KEY = "";
     private static final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie";
 
-    public static URL buildUrl(String movieCommand) {
+    public static URL buildUrl(String movieCommand, String page) {
         String baseUrl = MOVIE_DB_BASE_URL + "/" + movieCommand;
         Uri builtUri = Uri.parse(baseUrl).buildUpon()
                 .appendQueryParameter(API_KEY_PARAM, API_KEY)
                 .appendQueryParameter(LANGUAGE_PARAM, "en-US")
-                .appendQueryParameter(PAGE_PARAM, "1")
+                .appendQueryParameter(PAGE_PARAM, page)
                 .build();
 
         URL url = null;
@@ -65,5 +65,8 @@ public class NetworkUtils {
             urlConnection.disconnect();
         }
         return null;
+
     }
+
+
 }

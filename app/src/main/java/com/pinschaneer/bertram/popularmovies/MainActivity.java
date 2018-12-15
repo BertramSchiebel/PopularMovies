@@ -10,13 +10,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
 import com.pinschaneer.bertram.popularmovies.data.MovieResultData;
-import com.pinschaneer.bertram.popularmovies.utilities.MovieDBJsonUtils;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler {
@@ -52,30 +51,39 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 .show();
     }
 
-    public class FetchMovieDataTask extends AsyncTask<String, Void, String> {
+    public class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
+
 
         @Override
-        protected String doInBackground(String... searchParams) {
+        protected MovieDBPageResult doInBackground(String... searchParams) {
             if (searchParams.length == 0) {
                 return null;
             }
+            int totalPages = 1;
+            int aktualPage = 1;
+            MovieDBPageResult pageResult = null;
+            do {
+                URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0], Integer.toString(aktualPage));
+                try {
+                    String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
+                    pageResult = new MovieDBPageResult(response);
+                    totalPages = pageResult.getTotalPages();
+                    publishProgress(pageResult);
+                    aktualPage++;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            } while (aktualPage < totalPages);
 
-            URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0]);
-            try {
-                String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
-                return response;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
+            return null;
         }
 
         @Override
-        protected void onPostExecute(String movieData) {
-            if (movieData != null) {
-                ArrayList<MovieResultData> movieDataList = MovieDBJsonUtils.getMovieResults(movieData);
-                mMovieListAdapter.setMovieData(movieDataList);
-
+        protected void onProgressUpdate(MovieDBPageResult... values) {
+            super.onProgressUpdate(values);
+            if (values.length > 0) {
+                mMovieListAdapter.setMovieData(values[0].getResults());
             }
         }
     }
