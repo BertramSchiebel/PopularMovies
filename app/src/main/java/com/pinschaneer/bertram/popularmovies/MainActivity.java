@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             if (searchParams.length == 0) {
                 return null;
             }
-            int totalPages = 1;
+            int totalPages = 3;
             int aktualPage = 1;
             MovieDBPageResult pageResult = null;
             do {
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 try {
                     String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
                     pageResult = MovieDBPageResult.createMovieDBPageResult(response);
-                    totalPages = pageResult.getTotalPages();
+                    //totalPages = pageResult.getTotalPages();
                     publishProgress(pageResult);
                     aktualPage++;
                 } catch (IOException e) {
