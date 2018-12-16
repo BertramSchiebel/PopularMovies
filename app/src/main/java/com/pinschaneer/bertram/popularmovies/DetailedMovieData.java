@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.net.URL;
 
 public class DetailedMovieData extends AppCompatActivity {
     private TextView mDisplayIdTextView;
-    private TextView mDisplayDescriptionTextview;
+    private TextView mDisplayDescriptionTextView;
     private String mDetailedMovieId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +22,7 @@ public class DetailedMovieData extends AppCompatActivity {
         setContentView(R.layout.activity_detailed_movie_data);
 
         mDisplayIdTextView = findViewById(R.id.tv_movie_detail_id);
-        mDisplayDescriptionTextview = findViewById(R.id.tv_movie_detail_description);
+        mDisplayDescriptionTextView = findViewById(R.id.tv_movie_detail_description);
         Intent startActivityIntent = getIntent();
 
         if (startActivityIntent != null) {
@@ -63,7 +64,10 @@ public class DetailedMovieData extends AppCompatActivity {
         protected void onPostExecute(String response) {
             super.onPostExecute(response);
             if (response != null) {
-                mDisplayDescriptionTextview.setText(response);
+                MovieDetailData details = MovieDetailData.crateMovieDetailData(response);
+                if (details != null) {
+                    mDisplayDescriptionTextView.setText(details.getDescription());
+                }
             }
         }
     }

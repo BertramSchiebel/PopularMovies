@@ -15,9 +15,9 @@ import java.util.ArrayList;
 public class MovieDBPageResult {
     private static final String TAG = MovieDBPageResult.class.getSimpleName();
 
-    public static final String MDB_RESULTS = "results";
-    public static final String MDB_PAGE = "page";
-    public static final String MDB_TOTAL_PAGES = "total_pages";
+    private static final String MDB_RESULTS = "results";
+    private static final String MDB_PAGE = "page";
+    private static final String MDB_TOTAL_PAGES = "total_pages";
 
     private int mPageNo;
     private ArrayList<MovieResultData> mResults;

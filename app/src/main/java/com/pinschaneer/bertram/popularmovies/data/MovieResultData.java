@@ -10,13 +10,13 @@ import org.json.JSONObject;
  * the results which will be  parse are from commands like /movie/popular or /movie/top_rated
  */
 public class MovieResultData {
-    public static final String MDB_ID = "id";
-    public static final String MDB_POSTER_PATH = "poster_path";
-    public static final String MDB_TITLE = "title";
+    private static final String MDB_ID = "id";
+    private static final String MDB_POSTER_PATH = "poster_path";
+    private static final String MDB_TITLE = "title";
     private static final String TAG = MovieResultData.class.getSimpleName();
 
     /**
-     * Factorynethod to create a instance of this class according to a given JSON data string
+     * Factory method to create a instance of this class according to a given JSON data string
      *
      * @param resultJsonString the JSON data string
      * @return a Instance of this class or null if parsing has an error
