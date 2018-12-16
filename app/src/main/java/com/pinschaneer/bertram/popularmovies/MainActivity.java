@@ -21,6 +21,7 @@ import java.net.URL;
 
 
 public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler {
+    public static final String MDB_GET_POPULAR_COMMAND = "movie/popular";
     private RecyclerView mMovieListRecyclerView;
     private MovieListAdapter mMovieListAdapter;
     private TextView mErrorMessageDisplay;
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     }
 
     private void loadMovieData() {
-        new FetchMovieDataTask(this).execute("popular");
+        new FetchMovieDataTask(this).execute(MDB_GET_POPULAR_COMMAND);
     }
 
     private void showErrorMessage() {

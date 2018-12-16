@@ -31,7 +31,7 @@ public class NetworkUtils {
      */
     private static final String API_KEY = "";
 
-    private static final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie";
+    private static final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3";
 
     /**
      * Builds a Url which can receive data from the themociedb.org server
