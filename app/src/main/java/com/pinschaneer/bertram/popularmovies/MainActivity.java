@@ -1,6 +1,7 @@
 package com.pinschaneer.bertram.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -54,8 +55,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     @Override
     public void onClick(MovieResultData movieData) {
         Context context = this;
-        Toast.makeText(context, movieData.toString(), Toast.LENGTH_SHORT)
-                .show();
+        Intent startDetaildMovieActivity = new Intent(context, DetailedMovieData.class);
+        startDetaildMovieActivity.putExtra(Intent.EXTRA_TEXT, Integer.toString(movieData.getId()));
+        startActivity(startDetaildMovieActivity);
     }
 
     public class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
