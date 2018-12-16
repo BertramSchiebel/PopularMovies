@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     }
 
     private void loadMovieData() {
-        new FetchMovieDataTask().execute("popular");
+        new FetchMovieDataTask(this).execute("popular");
     }
 
     private void showErrorMessage() {
@@ -59,6 +59,12 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     }
 
     public class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
+
+        private Context mContext;
+
+        public FetchMovieDataTask(Context context) {
+            this.mContext = context;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -109,10 +115,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 showErrorMessage();
             } else {
 
-//                Context context = getParent();
-//                String msg = "finishd download movie data : received : " + mMovieListAdapter.getItemCount() + "data sets";
-//                Toast.makeText(context, msg, Toast.LENGTH_SHORT)
-//                        .show();
+                String msg = String.format("Download finished, received : %d data sets", mMovieListAdapter.getItemCount());
+                Toast.makeText(mContext, msg, Toast.LENGTH_LONG)
+                        .show();
             }
         }
     }
