@@ -20,16 +20,17 @@ public class MovieDBPageResult {
     private ArrayList<MovieResultData> mResults;
     private int mTotal_pages;
 
-    public MovieDBPageResult(String jsonDataString
+    public static MovieDBPageResult createMovieDBPageResult(String jsonDataString
     ) {
-
-        mResults = new ArrayList<>();
+        MovieDBPageResult movieDBPageResult = new MovieDBPageResult();
+        ArrayList<MovieResultData> resultsDatalist = new ArrayList<>();
+        movieDBPageResult.setResults(resultsDatalist);
         try {
 
             JSONObject listSearchResult = new JSONObject(jsonDataString);
 
             if (listSearchResult.has(MDB_PAGE)) {
-                setPageNo(listSearchResult.getInt(MDB_PAGE));
+                movieDBPageResult.setPageNo(listSearchResult.getInt(MDB_PAGE));
             }
 
 
@@ -37,8 +38,10 @@ public class MovieDBPageResult {
                 JSONArray resultList = listSearchResult.getJSONArray(MDB_RESULTS);
                 for (int i = 0; i < resultList.length(); i++) {
                     JSONObject entryJson = resultList.getJSONObject(i);
-                    MovieResultData movieResultEntry = new MovieResultData(entryJson.toString());
-                    mResults.add(movieResultEntry);
+                    MovieResultData movieResultEntry = MovieResultData.createMovieResultData(entryJson.toString());
+                    if (null != movieResultEntry) {
+                        resultsDatalist.add(movieResultEntry);
+                    }
                 }
 
             } else {
@@ -46,12 +49,15 @@ public class MovieDBPageResult {
             }
 
             if (listSearchResult.has(MDB_TOTAL_PAGES)) {
-                setTotalPages(listSearchResult.getInt(MDB_TOTAL_PAGES));
+                movieDBPageResult.setTotalPages(listSearchResult.getInt(MDB_TOTAL_PAGES));
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
+
+        return movieDBPageResult;
     }
 
     public int getPageNo() {

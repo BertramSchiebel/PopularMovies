@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,13 +36,19 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         mMovieListAdapter = new MovieListAdapter(this);
         mMovieListRecyclerView.setAdapter(mMovieListAdapter);
 
-
+        mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
+        mLoadingInidcattor = findViewById(R.id.pb_loading_indicator);
 
         loadMovieData();
     }
 
     private void loadMovieData() {
         new FetchMovieDataTask().execute("popular");
+    }
+
+    private void showErrorMessage() {
+        mMovieListRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -53,6 +60,11 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
     public class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingInidcattor.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected MovieDBPageResult doInBackground(String... searchParams) {
@@ -66,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0], Integer.toString(aktualPage));
                 try {
                     String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
-                    pageResult = new MovieDBPageResult(response);
+                    pageResult = MovieDBPageResult.createMovieDBPageResult(response);
                     totalPages = pageResult.getTotalPages();
                     publishProgress(pageResult);
                     aktualPage++;
@@ -83,7 +95,24 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         protected void onProgressUpdate(MovieDBPageResult... values) {
             super.onProgressUpdate(values);
             if (values.length > 0) {
+                mLoadingInidcattor.setVisibility(View.INVISIBLE);
                 mMovieListAdapter.setMovieData(values[0].getResults());
+            }
+        }
+
+        @Override
+        protected void onPostExecute(MovieDBPageResult movieDBPageResult) {
+            super.onPostExecute(movieDBPageResult);
+            mLoadingInidcattor.setVisibility(View.INVISIBLE);
+            if (mMovieListAdapter.getItemCount() == 0) {
+                mErrorMessageDisplay.setText(R.string.error_message);
+                showErrorMessage();
+            } else {
+
+//                Context context = getParent();
+//                String msg = "finishd download movie data : received : " + mMovieListAdapter.getItemCount() + "data sets";
+//                Toast.makeText(context, msg, Toast.LENGTH_SHORT)
+//                        .show();
             }
         }
     }
