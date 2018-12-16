@@ -8,18 +8,28 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * This class parse the response of the themociedb.org server and holds the data
+ * of results with more the one page like the commands /movie/popular or /movie/top_rated
+ */
 public class MovieDBPageResult {
+    private static final String TAG = MovieDBPageResult.class.getSimpleName();
 
     public static final String MDB_RESULTS = "results";
     public static final String MDB_PAGE = "page";
     public static final String MDB_TOTAL_PAGES = "total_pages";
 
-    private static final String TAG = MovieDBPageResult.class.getSimpleName();
-
     private int mPageNo;
     private ArrayList<MovieResultData> mResults;
     private int mTotal_pages;
 
+
+    /**
+     * Factorynethod to create a instance of this class according to a given JSON data string
+     *
+     * @param jsonDataString the JSON data string
+     * @return a Instance of this class or null if parsing has an error
+     */
     public static MovieDBPageResult createMovieDBPageResult(String jsonDataString
     ) {
         MovieDBPageResult movieDBPageResult = new MovieDBPageResult();
@@ -59,6 +69,7 @@ public class MovieDBPageResult {
 
         return movieDBPageResult;
     }
+
 
     public int getPageNo() {
         return mPageNo;
