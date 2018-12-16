@@ -26,7 +26,7 @@ public class NetworkUtils {
 
 
     /**
-     * Thies Api key is your personal key in order to communicate you have to
+     * These Api key is your personal key in order to communicate you have to
      * receive your key from the website  https://www.themoviedb.org/
      */
     private static final String API_KEY = "";
