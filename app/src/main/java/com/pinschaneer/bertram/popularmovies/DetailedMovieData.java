@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,6 +47,20 @@ public class DetailedMovieData extends AppCompatActivity {
 
         TextView displayDescription = findViewById(R.id.tv_movie_detail_description);
         displayDescription.setText(movieDetails.getDescription());
+
+        TextView dispayRating = findViewById(R.id.movie_detail_rating);
+        String rating = String.format("%.1f/10", movieDetails.getAverageVote());
+        dispayRating.setText(rating);
+
+        TextView displayReleaseDate = findViewById(R.id.movie_detail_release_date);
+        String releaseDate = movieDetails.getReleaseDate().toString();
+        displayReleaseDate.setText(releaseDate);
+
+        ImageView poster = findViewById(R.id.movie_detail_image);
+        Picasso.get()
+                .load(movieDetails.getPosterImageUrl())
+                .into(poster);
+
     }
 
     class FetchMovieDetailData extends AsyncTask<String, Void, String> {

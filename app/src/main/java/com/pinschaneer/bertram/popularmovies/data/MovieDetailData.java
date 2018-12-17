@@ -127,5 +127,14 @@ public class MovieDetailData {
         this.mDescription = description;
     }
 
+    public String getPosterImageUrl() {
+        if (mPosterPath != null && !mPosterPath.isEmpty()) {
+
+            String url = "https://image.tmdb.org/t/p/w500" + mPosterPath;
+            return url;
+        } else {
+            return "";
+        }
+    }
 
 }
