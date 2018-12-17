@@ -13,6 +13,8 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.util.Locale;
 
 public class DetailedMovieData extends AppCompatActivity {
 
@@ -50,11 +52,14 @@ public class DetailedMovieData extends AppCompatActivity {
 
         TextView dispayRating = findViewById(R.id.movie_detail_rating);
         String rating = String.format("%.1f/10", movieDetails.getAverageVote());
-        dispayRating.setText(rating);
+
+        dispayRating.setText("Rating:\n" + rating);
 
         TextView displayReleaseDate = findViewById(R.id.movie_detail_release_date);
-        String releaseDate = movieDetails.getReleaseDate().toString();
-        displayReleaseDate.setText(releaseDate);
+        Locale current = getResources().getConfiguration().locale;
+        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, current);
+        String releaseDate = dateFormat.format(movieDetails.getReleaseDate());
+        displayReleaseDate.setText("Release Date:\n" + releaseDate);
 
         ImageView poster = findViewById(R.id.movie_detail_image);
         Picasso.get()
