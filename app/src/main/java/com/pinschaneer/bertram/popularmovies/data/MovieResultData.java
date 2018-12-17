@@ -69,8 +69,13 @@ public class MovieResultData {
         return id;
     }
 
-    public String getPosterPath() {
+    private String getPosterPath() {
         return posterPath;
+    }
+
+    public String getPosterImageUrl() {
+        String url = "https://image.tmdb.org/t/p/w500" + posterPath;
+        return url;
     }
 
     public String getTitle() {

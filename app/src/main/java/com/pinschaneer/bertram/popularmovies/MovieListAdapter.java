@@ -6,9 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.pinschaneer.bertram.popularmovies.data.MovieResultData;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -35,7 +36,10 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
         MovieResultData data = mMovieDataList.get(position);
-        holder.mMovieDataTextView.setText(data.getTitle());
+        Picasso.get()
+                .load(data.getPosterImageUrl())
+                .into(holder.mMovieDataImage);
+
     }
 
     @Override
@@ -62,11 +66,11 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public final TextView mMovieDataTextView;
+        public final ImageView mMovieDataImage;
 
         public MovieAdapterViewHolder(View itemView) {
             super(itemView);
-            mMovieDataTextView = itemView.findViewById(R.id.tv_movie_data);
+            mMovieDataImage = itemView.findViewById(R.id.iv_movie_posterImage);
             itemView.setOnClickListener(this);
         }
 

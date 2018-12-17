@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         setContentView(R.layout.activity_main);
 
         mMovieListRecyclerView = findViewById(R.id.rv_movie_list);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         mMovieListRecyclerView.setLayoutManager(layoutManager);
         mMovieListAdapter = new MovieListAdapter(this);
         mMovieListRecyclerView.setAdapter(mMovieListAdapter);
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             if (searchParams.length == 0) {
                 return null;
             }
-            int totalPages = 3;
+            int totalPages = 20;
             int aktualPage = 1;
             MovieDBPageResult pageResult = null;
             do {
