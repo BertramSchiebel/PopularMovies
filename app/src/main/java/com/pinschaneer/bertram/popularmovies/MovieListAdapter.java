@@ -57,6 +57,14 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
         notifyDataSetChanged();
     }
 
+    public void clearMovieData() {
+        if (mMovieDataList == null) {
+            return;
+        }
+        mMovieDataList.clear();
+        notifyDataSetChanged();
+    }
+
     /**
      * The interface that receives onClick messages.
      */

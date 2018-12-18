@@ -2,13 +2,17 @@ package com.pinschaneer.bertram.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,12 +24,14 @@ import java.io.IOException;
 import java.net.URL;
 
 
-public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler {
-    public static final String MDB_GET_POPULAR_COMMAND = "movie/popular";
+public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler, AdapterView.OnItemSelectedListener {
+    private String mCommand = "movie/popular";
     private RecyclerView mMovieListRecyclerView;
     private MovieListAdapter mMovieListAdapter;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingInidcattor;
+    private Spinner mMovieQuerySpinner;
+    private String[] mPossibleMovieSelections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +47,25 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
         mLoadingInidcattor = findViewById(R.id.pb_loading_indicator);
 
+
+        mMovieQuerySpinner = findViewById(R.id.sp_switch_move_query);
+
+        Resources res = getResources();
+
+        mPossibleMovieSelections = res.getStringArray(R.array.movie_list_querries);
+
+        mMovieQuerySpinner.setOnItemSelectedListener(this);
+
+        ArrayAdapter movieQuerySpinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, mPossibleMovieSelections);
+        movieQuerySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        mMovieQuerySpinner.setAdapter(movieQuerySpinnerAdapter);
+
+
         loadMovieData();
     }
 
     private void loadMovieData() {
-        new FetchMovieDataTask(this).execute(MDB_GET_POPULAR_COMMAND);
+        new FetchMovieDataTask(this).execute(mCommand);
     }
 
     private void showErrorMessage() {
@@ -60,6 +80,34 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         startDetaildMovieActivity.putExtra(Intent.EXTRA_TEXT, Integer.toString(movieData.getId()));
         startActivity(startDetaildMovieActivity);
     }
+
+    // Spinner
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+
+        switch (pos) {
+            case 0:
+                mCommand = "movie/popular";
+                break;
+            case 1:
+                mCommand = "movie/top_rated";
+                break;
+
+            default:
+                mCommand = "movie/popular";
+        }
+
+        mMovieListAdapter.clearMovieData();
+        loadMovieData();
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+        //Auto-generated method stub
+    }
+
+    //spinner
 
     public class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
 
