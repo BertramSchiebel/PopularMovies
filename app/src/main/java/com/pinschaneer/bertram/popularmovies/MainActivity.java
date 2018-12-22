@@ -1,5 +1,6 @@
 package com.pinschaneer.bertram.popularmovies;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -22,6 +23,7 @@ import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler, AdapterView.OnItemSelectedListener {
@@ -32,6 +34,18 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private ProgressBar mLoadingInidcattor;
     private Spinner mMovieQuerySpinner;
     private String[] mPossibleMovieSelections;
+    private ProgressBar mloadingPageIndicator;
+    private AsyncTask<String, MovieDBPageResult, MovieDBPageResult> mFetchMovieDataTask;
+
+    private void showErrorMessage() {
+        mMovieListRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    private void showMovieResults() {
+        mMovieListRecyclerView.setVisibility(View.VISIBLE);
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,22 +70,26 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         mMovieQuerySpinner.setOnItemSelectedListener(this);
 
-        ArrayAdapter movieQuerySpinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, mPossibleMovieSelections);
+        ArrayAdapter<String> movieQuerySpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mPossibleMovieSelections);
         movieQuerySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         mMovieQuerySpinner.setAdapter(movieQuerySpinnerAdapter);
 
+        mFetchMovieDataTask = new FetchMovieDataTask(this);
 
-        loadMovieData();
+        mloadingPageIndicator = findViewById(R.id.pb_display_page_count);
     }
 
     private void loadMovieData() {
-        new FetchMovieDataTask(this).execute(mCommand);
+        if (null != mFetchMovieDataTask) {
+
+            AsyncTask.Status status = mFetchMovieDataTask.getStatus();
+            if (status != AsyncTask.Status.RUNNING) {
+                mMovieListAdapter.clearMovieData();
+                mFetchMovieDataTask = new FetchMovieDataTask(this).execute(mCommand);
+            }
+        }
     }
 
-    private void showErrorMessage() {
-        mMovieListRecyclerView.setVisibility(View.INVISIBLE);
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
-    }
 
     @Override
     public void onClick(MovieResultData movieData) {
@@ -81,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         startActivity(startDetaildMovieActivity);
     }
 
-    // Spinner
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
 
@@ -97,53 +114,72 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 mCommand = "movie/popular";
         }
 
-        mMovieListAdapter.clearMovieData();
         loadMovieData();
-
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-        //Auto-generated method stub
+        //auto generated stub
     }
 
-    //spinner
 
+    @SuppressLint("StaticFieldLeak")
     public class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
 
         private Context mContext;
+        private int mCurrentPageLoading;
 
-        public FetchMovieDataTask(Context context) {
+
+        private FetchMovieDataTask(Context context) {
             this.mContext = context;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            mloadingPageIndicator.setProgress(0);
             mLoadingInidcattor.setVisibility(View.VISIBLE);
+            mloadingPageIndicator.setVisibility(View.VISIBLE);
         }
+
+
+        @Override
+        protected void onCancelled(MovieDBPageResult movieDBPageResult) {
+            super.onCancelled(movieDBPageResult);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            onPostExecute(null);
+            mloadingPageIndicator.setVisibility(View.INVISIBLE);
+        }
+
 
         @Override
         protected MovieDBPageResult doInBackground(String... searchParams) {
             if (searchParams.length == 0) {
                 return null;
             }
-            int totalPages = 20;
-            int aktualPage = 1;
-            MovieDBPageResult pageResult = null;
+            int totalPages = 5;
+            mCurrentPageLoading = 1;
+            mloadingPageIndicator.setProgress(mCurrentPageLoading);
+            MovieDBPageResult pageResult;
+            mloadingPageIndicator.setMax(totalPages);
+
             do {
-                URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0], Integer.toString(aktualPage));
+                URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0], Integer.toString(mCurrentPageLoading));
                 try {
                     String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
                     pageResult = MovieDBPageResult.createMovieDBPageResult(response);
                     //totalPages = pageResult.getTotalPages();
                     publishProgress(pageResult);
-                    aktualPage++;
+                    mCurrentPageLoading++;
                 } catch (IOException e) {
                     e.printStackTrace();
                     break;
                 }
-            } while (aktualPage < totalPages);
+            } while (mCurrentPageLoading <= totalPages);
 
             return null;
         }
@@ -151,24 +187,30 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         @Override
         protected void onProgressUpdate(MovieDBPageResult... values) {
             super.onProgressUpdate(values);
+
             if (values.length > 0) {
                 mLoadingInidcattor.setVisibility(View.INVISIBLE);
                 mMovieListAdapter.setMovieData(values[0].getResults());
+                mloadingPageIndicator.setProgress(mCurrentPageLoading);
+                showMovieResults();
             }
         }
 
         @Override
         protected void onPostExecute(MovieDBPageResult movieDBPageResult) {
             super.onPostExecute(movieDBPageResult);
+
             mLoadingInidcattor.setVisibility(View.INVISIBLE);
+            mloadingPageIndicator.setVisibility(View.INVISIBLE);
             if (mMovieListAdapter.getItemCount() == 0) {
                 mErrorMessageDisplay.setText(R.string.error_message);
                 showErrorMessage();
             } else {
 
-                String msg = String.format("Download finished, received : %d data sets", mMovieListAdapter.getItemCount());
+                String msg = String.format(Locale.getDefault(), getString(R.string.message_loaded_datasetes), mMovieListAdapter.getItemCount());
                 Toast.makeText(mContext, msg, Toast.LENGTH_LONG)
                         .show();
+
             }
         }
     }

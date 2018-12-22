@@ -6,6 +6,8 @@
     <string name="release_date">Release Date</string>
     <string name="rating">Rating</string>
     <string name="overview">overview</string>
+    <string name="movie_poster_image">Movie Poster Image</string>
+    <string name="message_loaded_datasetes">Download finished, received : %d data sets</string>
     <string-array name="movie_list_querries">
         <item>most popular</item>
         <item>highest rated</item>

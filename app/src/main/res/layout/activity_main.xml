@@ -10,11 +10,18 @@
         android:id="@+id/sp_switch_move_query"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         android:layout_margin="8dp">
 
     </Spinner>
 
+
+    <ProgressBar
+        android:id="@+id/pb_display_page_count"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible" />
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
