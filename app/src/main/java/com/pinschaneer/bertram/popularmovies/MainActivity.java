@@ -59,17 +59,13 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         mMovieListRecyclerView.setAdapter(mMovieListAdapter);
 
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
+
         mLoadingInidcattor = findViewById(R.id.pb_loading_indicator);
 
-
         mMovieQuerySpinner = findViewById(R.id.sp_switch_move_query);
-
         Resources res = getResources();
-
         mPossibleMovieSelections = res.getStringArray(R.array.movie_list_querries);
-
         mMovieQuerySpinner.setOnItemSelectedListener(this);
-
         ArrayAdapter<String> movieQuerySpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mPossibleMovieSelections);
         movieQuerySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         mMovieQuerySpinner.setAdapter(movieQuerySpinnerAdapter);
@@ -81,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
     private void loadMovieData() {
         if (null != mFetchMovieDataTask) {
-
             AsyncTask.Status status = mFetchMovieDataTask.getStatus();
             if (status != AsyncTask.Status.RUNNING) {
                 mMovieListAdapter.clearMovieData();
@@ -104,14 +99,14 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         switch (pos) {
             case 0:
-                mCommand = "movie/popular";
+                mCommand = getString(R.string.most_popular_command);
                 break;
             case 1:
-                mCommand = "movie/top_rated";
+                mCommand = getString(R.string.top_rated_command);
                 break;
 
             default:
-                mCommand = "movie/popular";
+                mCommand = getString(R.string.most_popular_command);
         }
 
         loadMovieData();
@@ -137,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            mMovieQuerySpinner.setEnabled(false);
             mloadingPageIndicator.setProgress(0);
             mLoadingInidcattor.setVisibility(View.VISIBLE);
             mloadingPageIndicator.setVisibility(View.VISIBLE);
@@ -153,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             super.onCancelled();
             onPostExecute(null);
             mloadingPageIndicator.setVisibility(View.INVISIBLE);
+            mMovieQuerySpinner.setEnabled(true);
+
         }
 
 
@@ -200,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         protected void onPostExecute(MovieDBPageResult movieDBPageResult) {
             super.onPostExecute(movieDBPageResult);
 
+            mMovieQuerySpinner.setEnabled(true);
             mLoadingInidcattor.setVisibility(View.INVISIBLE);
             mloadingPageIndicator.setVisibility(View.INVISIBLE);
             if (mMovieListAdapter.getItemCount() == 0) {
