@@ -3,8 +3,8 @@
     <string name="error_message">An error has occurred. Please try again later</string>
     <string name="detailed_movie_title">Movie Details</string>
     <string name="poster_image_description">The image of the movie poster</string>
-    <string name="release_date">Release Date</string>
-    <string name="rating">Rating</string>
+    <string name="release_date">Release Date: </string>
+    <string name="rating">Rating: </string>
     <string name="overview">overview</string>
     <string name="movie_poster_image">Movie Poster Image</string>
     <string name="message_loaded_datasetes">Download finished, received : %d data sets</string>

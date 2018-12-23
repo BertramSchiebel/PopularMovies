@@ -1,10 +1,14 @@
 package com.pinschaneer.bertram.popularmovies;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
@@ -17,6 +21,7 @@ import java.text.DateFormat;
 import java.util.Locale;
 
 public class DetailedMovieData extends AppCompatActivity {
+
 
     private String mDetailedMovieId;
     @Override
@@ -43,6 +48,33 @@ public class DetailedMovieData extends AppCompatActivity {
 
     }
 
+    private void displayLoadingIsActive(boolean loadingIsActive) {
+        int detailVisability = View.VISIBLE;
+        int progressVisability = View.INVISIBLE;
+        if (loadingIsActive) {
+            detailVisability = View.INVISIBLE;
+            progressVisability = View.VISIBLE;
+        }
+
+        ProgressBar loadingIndicator = findViewById(R.id.detail_loading_indicator);
+        loadingIndicator.setVisibility(progressVisability);
+
+        TextView displayTitle = findViewById(R.id.tv_movie_detail_tiltle);
+        displayTitle.setVisibility(detailVisability);
+
+        TextView displayDescription = findViewById(R.id.tv_movie_detail_description);
+        displayDescription.setVisibility(detailVisability);
+
+        TextView dispayRating = findViewById(R.id.movie_detail_rating);
+        dispayRating.setVisibility(detailVisability);
+
+        TextView displayReleaseDate = findViewById(R.id.movie_detail_release_date);
+        displayReleaseDate.setVisibility(detailVisability);
+
+        ImageView poster = findViewById(R.id.movie_detail_image);
+        poster.setVisibility(detailVisability);
+    }
+
     private void populateDisplayInformation(MovieDetailData movieDetails) {
         TextView displayTitle = findViewById(R.id.tv_movie_detail_tiltle);
         displayTitle.setText(movieDetails.getTitle());
@@ -51,15 +83,19 @@ public class DetailedMovieData extends AppCompatActivity {
         displayDescription.setText(movieDetails.getDescription());
 
         TextView dispayRating = findViewById(R.id.movie_detail_rating);
-        String rating = String.format("%.1f/10", movieDetails.getAverageVote());
+        String rating = String.format(Locale.getDefault(), "%.1f/10", movieDetails.getAverageVote());
 
-        dispayRating.setText("Rating:\n" + rating);
+        Resources resources = getResources();
+        String ratingtext = resources.getString(R.string.rating) + "\n" + rating;
+        dispayRating.setText(ratingtext);
 
         TextView displayReleaseDate = findViewById(R.id.movie_detail_release_date);
         Locale current = getResources().getConfiguration().locale;
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, current);
         String releaseDate = dateFormat.format(movieDetails.getReleaseDate());
-        displayReleaseDate.setText("Release Date:\n" + releaseDate);
+
+        String releaseDateText = resources.getString(R.string.release_date) + "\n" + releaseDate;
+        displayReleaseDate.setText(releaseDateText);
 
         ImageView poster = findViewById(R.id.movie_detail_image);
         Picasso.get()
@@ -68,7 +104,24 @@ public class DetailedMovieData extends AppCompatActivity {
 
     }
 
+    private void showErrorMessage() {
+        displayLoadingIsActive(true);
+        ProgressBar loadingIndicator = findViewById(R.id.detail_loading_indicator);
+        loadingIndicator.setVisibility(View.INVISIBLE);
+        TextView errorMessage = findViewById(R.id.detail_error_message);
+        Resources res = getResources();
+        errorMessage.setText(res.getText(R.string.error_message));
+        errorMessage.setVisibility(View.VISIBLE);
+    }
+
+    @SuppressLint("StaticFieldLeak")
     class FetchMovieDetailData extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            displayLoadingIsActive(true);
+        }
 
         @Override
         protected String doInBackground(String... params) {
@@ -84,7 +137,6 @@ public class DetailedMovieData extends AppCompatActivity {
                 return null;
             }
             return response;
-
         }
 
         @Override
@@ -93,8 +145,12 @@ public class DetailedMovieData extends AppCompatActivity {
             if (response != null) {
                 MovieDetailData movieDetails = MovieDetailData.crateMovieDetailData(response);
                 if (movieDetails != null) {
+                    displayLoadingIsActive(false);
                     populateDisplayInformation(movieDetails);
                 }
+            } else {
+                showErrorMessage();
+
             }
         }
     }
