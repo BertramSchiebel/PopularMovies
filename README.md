@@ -1,5 +1,19 @@
 # PopularMovies
 
+## APK Key
+Youn need a APK key from [www.themoviedb.org](https://www.themoviedb.org).
+After you have received your APK key it must be stored in the file [NetworkUtils.java](./app/src/main/java/com/pinschaneer/bertram/popularmovies/utilities/NetworkUtils.java).
+
+```java
+
+    /**
+     * These Api key is your personal key in order to communicate you have to
+     * receive your key from the website  https://www.themoviedb.org/
+     */
+    private static final String API_KEY = "<your key>";
+    
+```
+
 ## Project Overview
 Most of us can relate to kicking back on the couch and enjoying a movie with friends and family. In this project, you’ll build an app to allow users to discover the most popular movies playing. We will split the development of this app in two stages. First, let's talk about stage 1.
 
