@@ -15,6 +15,10 @@ public class MovieResultData {
     private static final String MDB_TITLE = "title";
     private static final String TAG = MovieResultData.class.getSimpleName();
 
+    private String title;
+
+    private String posterPath;
+
     /**
      * Factory method to create a instance of this class according to a given JSON data string
      *
@@ -40,50 +44,40 @@ public class MovieResultData {
             }
 
         } catch (JSONException e) {
-            Log.e(TAG, "Input is not a valid JSAON stiring");
+            Log.e(TAG, "Input is not a valid JSON string");
             return null;
         }
         return resultData;
     }
 
-    private String posterPath;
+    private int id;
 
-    public void setPosterPath(String posterPath) {
+    private void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
     }
 
-    private int id;
-
-    public void setId(int id) {
-        this.id = id;
+    public String getPosterImageUrl() {
+        return "https://image.tmdb.org/t/p/w500" + posterPath;
     }
-
-    private String title;
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
 
     public int getId() {
         return id;
     }
 
-    private String getPosterPath() {
-        return posterPath;
+    private void setId(int id) {
+        this.id = id;
     }
 
-    public String getPosterImageUrl() {
-        String url = "https://image.tmdb.org/t/p/w500" + posterPath;
-        return url;
-    }
-
-    public String getTitle() {
+    private String getTitle() {
         return title;
+    }
+
+    private void setTitle(String title) {
+        this.title = title;
     }
 
     @Override
     public String toString() {
-        return "Id: " + getId() + "; Titel: " + getTitle();
+        return "Id: " + getId() + "; Title: " + getTitle();
     }
 }

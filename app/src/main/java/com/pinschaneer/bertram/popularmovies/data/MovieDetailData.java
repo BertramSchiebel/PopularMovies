@@ -1,5 +1,7 @@
 package com.pinschaneer.bertram.popularmovies.data;
 
+import android.annotation.SuppressLint;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -8,12 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * This class parse the JSON string for detaild movie informations and
- * holds its data after parisng
+ * This class parse the JSON string for detailed movie information and
+ * holds its data after parsing
  */
 public class MovieDetailData {
-    private static final String TAG = MovieDetailData.class.getSimpleName();
-
     private static final String MDB_TITLE = "title";
     private static final String MDB_OVERVIEW = "overview";
     private static final String MDB_RELEASE_DATE = "release_date";
@@ -27,7 +27,7 @@ public class MovieDetailData {
     private double mAverageVote;
 
     /**
-     * Factroy method to parse the given JSON string and returns
+     * Factory method to parse the given JSON string and returns
      * an instance of thi class
      *
      * @param jsonData the given JSON string to parse
@@ -51,7 +51,7 @@ public class MovieDetailData {
 
             if (movieDataJSON.has(MDB_RELEASE_DATE)) {
                 String dateString = movieDataJSON.getString(MDB_RELEASE_DATE);
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                 Date releaseDate;
                 try {
                     releaseDate = format.parse(dateString);
@@ -78,15 +78,12 @@ public class MovieDetailData {
         return mReleaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    private void setReleaseDate(Date releaseDate) {
         this.mReleaseDate = releaseDate;
     }
 
-    public String getPosterPath() {
-        return mPosterPath;
-    }
 
-    public void setPosterPath(String posterPath) {
+    private void setPosterPath(String posterPath) {
         this.mPosterPath = posterPath;
     }
 
@@ -94,7 +91,7 @@ public class MovieDetailData {
         return mAverageVote;
     }
 
-    public void setAverageVote(double averageVote) {
+    private void setAverageVote(double averageVote) {
         this.mAverageVote = averageVote;
     }
 
@@ -114,7 +111,7 @@ public class MovieDetailData {
     }
 
     /**
-     * @return Gets the desxription of the movie details
+     * @return Gets the description of the movie details
      */
     public String getDescription() {
         return mDescription;
@@ -130,8 +127,7 @@ public class MovieDetailData {
     public String getPosterImageUrl() {
         if (mPosterPath != null && !mPosterPath.isEmpty()) {
 
-            String url = "https://image.tmdb.org/t/p/w500" + mPosterPath;
-            return url;
+            return "https://image.tmdb.org/t/p/w500" + mPosterPath;
         } else {
             return "";
         }

@@ -22,7 +22,6 @@ import java.util.Locale;
 
 public class DetailedMovieData extends AppCompatActivity {
 
-
     private String mDetailedMovieId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,30 +48,30 @@ public class DetailedMovieData extends AppCompatActivity {
     }
 
     private void displayLoadingIsActive(boolean loadingIsActive) {
-        int detailVisability = View.VISIBLE;
-        int progressVisability = View.INVISIBLE;
+        int detailVisibility = View.VISIBLE;
+        int progressVisibility = View.INVISIBLE;
         if (loadingIsActive) {
-            detailVisability = View.INVISIBLE;
-            progressVisability = View.VISIBLE;
+            detailVisibility = View.INVISIBLE;
+            progressVisibility = View.VISIBLE;
         }
 
         ProgressBar loadingIndicator = findViewById(R.id.detail_loading_indicator);
-        loadingIndicator.setVisibility(progressVisability);
+        loadingIndicator.setVisibility(progressVisibility);
 
         TextView displayTitle = findViewById(R.id.tv_movie_detail_title);
-        displayTitle.setVisibility(detailVisability);
+        displayTitle.setVisibility(detailVisibility);
 
         TextView displayDescription = findViewById(R.id.tv_movie_detail_description);
-        displayDescription.setVisibility(detailVisability);
+        displayDescription.setVisibility(detailVisibility);
 
-        TextView dispayRating = findViewById(R.id.movie_detail_rating);
-        dispayRating.setVisibility(detailVisability);
+        TextView displayRating = findViewById(R.id.movie_detail_rating);
+        displayRating.setVisibility(detailVisibility);
 
         TextView displayReleaseDate = findViewById(R.id.movie_detail_release_date);
-        displayReleaseDate.setVisibility(detailVisability);
+        displayReleaseDate.setVisibility(detailVisibility);
 
         ImageView poster = findViewById(R.id.movie_detail_image);
-        poster.setVisibility(detailVisability);
+        poster.setVisibility(detailVisibility);
     }
 
     private void populateDisplayInformation(MovieDetailData movieDetails) {
@@ -82,12 +81,12 @@ public class DetailedMovieData extends AppCompatActivity {
         TextView displayDescription = findViewById(R.id.tv_movie_detail_description);
         displayDescription.setText(movieDetails.getDescription());
 
-        TextView dispayRating = findViewById(R.id.movie_detail_rating);
+        TextView displayRating = findViewById(R.id.movie_detail_rating);
         String rating = String.format(Locale.getDefault(), "%.1f/10", movieDetails.getAverageVote());
 
         Resources resources = getResources();
-        String ratingtext = resources.getString(R.string.rating) + "\n" + rating;
-        dispayRating.setText(ratingtext);
+        String ratingText = resources.getString(R.string.rating) + "\n" + rating;
+        displayRating.setText(ratingText);
 
         TextView displayReleaseDate = findViewById(R.id.movie_detail_release_date);
         Locale current = getResources().getConfiguration().locale;

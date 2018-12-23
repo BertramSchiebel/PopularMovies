@@ -28,8 +28,7 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
         Context context = parent.getContext();
         int layoutId = R.layout.moviedata_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
-        View view = inflater.inflate(layoutId, parent, shouldAttachToParentImmediately);
+        View view = inflater.inflate(layoutId, parent, false);
         return new MovieAdapterViewHolder(view);
     }
 
@@ -74,9 +73,9 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public final ImageView mMovieDataImage;
+        private final ImageView mMovieDataImage;
 
-        public MovieAdapterViewHolder(View itemView) {
+        private MovieAdapterViewHolder(View itemView) {
             super(itemView);
             mMovieDataImage = itemView.findViewById(R.id.iv_movie_posterImage);
             itemView.setOnClickListener(this);

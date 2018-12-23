@@ -12,17 +12,17 @@ import java.net.URL;
 import java.util.Scanner;
 
 /**
- * These utilities will be used to  communicate with the themociedb.org server
+ * These utilities will be used to  communicate with the themoviedb.org server
  */
 public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-    final static String API_KEY_PARAM = "api_key";
+    private final static String API_KEY_PARAM = "api_key";
 
-    final static String LANGUAGE_PARAM = "language";
+    private final static String LANGUAGE_PARAM = "language";
 
-    final static String PAGE_PARAM = "page";
+    private final static String PAGE_PARAM = "page";
 
 
     /**
@@ -34,11 +34,11 @@ public class NetworkUtils {
     private static final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3";
 
     /**
-     * Builds a Url which can receive data from the themociedb.org server
+     * Builds a Url which can receive data from the themoviedb.org server
      *
      * @param movieCommand the command of request
-     * @param page         the page number if the request gives more then one resulat page
-     * @return the URL for requesting the themociedb.org server
+     * @param page         the page number if the request gives more then one result page
+     * @return the URL for requesting the themoviedb.org server
      */
     public static URL buildUrl(String movieCommand, String page) {
         String baseUrl = MOVIE_DB_BASE_URL + "/" + movieCommand;
@@ -63,7 +63,7 @@ public class NetworkUtils {
 
 
     /**
-     * This method obens a Network connection to the given Url an returns the responese of this Url
+     * This method opens a Network connection to the given Url an returns the response of this Url
      *
      * @param url The URL to get Data from
      * @return the response of the Url

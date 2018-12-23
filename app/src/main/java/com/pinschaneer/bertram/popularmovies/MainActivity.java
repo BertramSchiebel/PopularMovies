@@ -31,10 +31,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private RecyclerView mMovieListRecyclerView;
     private MovieListAdapter mMovieListAdapter;
     private TextView mErrorMessageDisplay;
-    private ProgressBar mLoadingInidcattor;
+    private ProgressBar mLoadingIndicator;
     private Spinner mMovieQuerySpinner;
-    private String[] mPossibleMovieSelections;
-    private ProgressBar mloadingPageIndicator;
+    private ProgressBar mLoadingPageIndicator;
     private AsyncTask<String, MovieDBPageResult, MovieDBPageResult> mFetchMovieDataTask;
 
     private void showErrorMessage() {
@@ -60,11 +59,11 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
 
-        mLoadingInidcattor = findViewById(R.id.pb_loading_indicator);
+        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
         mMovieQuerySpinner = findViewById(R.id.sp_switch_move_query);
         Resources res = getResources();
-        mPossibleMovieSelections = res.getStringArray(R.array.movie_list_querries);
+        String[] mPossibleMovieSelections = res.getStringArray(R.array.movie_list_queries);
         mMovieQuerySpinner.setOnItemSelectedListener(this);
         ArrayAdapter<String> movieQuerySpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mPossibleMovieSelections);
         movieQuerySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         mFetchMovieDataTask = new FetchMovieDataTask(this);
 
-        mloadingPageIndicator = findViewById(R.id.pb_display_page_count);
+        mLoadingPageIndicator = findViewById(R.id.pb_display_page_count);
     }
 
     private void loadMovieData() {
@@ -89,9 +88,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     @Override
     public void onClick(MovieResultData movieData) {
         Context context = this;
-        Intent startDetaildMovieActivity = new Intent(context, DetailedMovieData.class);
-        startDetaildMovieActivity.putExtra(Intent.EXTRA_TEXT, Integer.toString(movieData.getId()));
-        startActivity(startDetaildMovieActivity);
+        Intent startDetailedMovieActivity = new Intent(context, DetailedMovieData.class);
+        startDetailedMovieActivity.putExtra(Intent.EXTRA_TEXT, Integer.toString(movieData.getId()));
+        startActivity(startDetailedMovieActivity);
     }
 
     @Override
@@ -119,9 +118,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
 
     @SuppressLint("StaticFieldLeak")
-    public class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
+    private class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
 
-        private Context mContext;
+        private final Context mContext;
         private int mCurrentPageLoading;
 
 
@@ -133,9 +132,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         protected void onPreExecute() {
             super.onPreExecute();
             mMovieQuerySpinner.setEnabled(false);
-            mloadingPageIndicator.setProgress(0);
-            mLoadingInidcattor.setVisibility(View.VISIBLE);
-            mloadingPageIndicator.setVisibility(View.VISIBLE);
+            mLoadingPageIndicator.setProgress(0);
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+            mLoadingPageIndicator.setVisibility(View.VISIBLE);
         }
 
 
@@ -148,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         protected void onCancelled() {
             super.onCancelled();
             onPostExecute(null);
-            mloadingPageIndicator.setVisibility(View.INVISIBLE);
+            mLoadingPageIndicator.setVisibility(View.INVISIBLE);
             mMovieQuerySpinner.setEnabled(true);
 
         }
@@ -161,9 +160,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             }
             int totalPages = 5;
             mCurrentPageLoading = 1;
-            mloadingPageIndicator.setProgress(mCurrentPageLoading);
+            mLoadingPageIndicator.setProgress(mCurrentPageLoading);
             MovieDBPageResult pageResult;
-            mloadingPageIndicator.setMax(totalPages);
+            mLoadingPageIndicator.setMax(totalPages);
 
             do {
                 URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0], Integer.toString(mCurrentPageLoading));
@@ -187,9 +186,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             super.onProgressUpdate(values);
 
             if (values.length > 0) {
-                mLoadingInidcattor.setVisibility(View.INVISIBLE);
+                mLoadingIndicator.setVisibility(View.INVISIBLE);
                 mMovieListAdapter.setMovieData(values[0].getResults());
-                mloadingPageIndicator.setProgress(mCurrentPageLoading);
+                mLoadingPageIndicator.setProgress(mCurrentPageLoading);
                 showMovieResults();
             }
         }
@@ -199,14 +198,14 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             super.onPostExecute(movieDBPageResult);
 
             mMovieQuerySpinner.setEnabled(true);
-            mLoadingInidcattor.setVisibility(View.INVISIBLE);
-            mloadingPageIndicator.setVisibility(View.INVISIBLE);
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            mLoadingPageIndicator.setVisibility(View.INVISIBLE);
             if (mMovieListAdapter.getItemCount() == 0) {
                 mErrorMessageDisplay.setText(R.string.error_message);
                 showErrorMessage();
             } else {
 
-                String msg = String.format(Locale.getDefault(), getString(R.string.message_loaded_datasetes), mMovieListAdapter.getItemCount());
+                String msg = String.format(Locale.getDefault(), getString(R.string.message_loaded_data_set), mMovieListAdapter.getItemCount());
                 Toast.makeText(mContext, msg, Toast.LENGTH_LONG)
                         .show();
 
