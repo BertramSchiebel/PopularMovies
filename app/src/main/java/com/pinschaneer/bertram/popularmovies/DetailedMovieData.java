@@ -59,7 +59,7 @@ public class DetailedMovieData extends AppCompatActivity {
         ProgressBar loadingIndicator = findViewById(R.id.detail_loading_indicator);
         loadingIndicator.setVisibility(progressVisability);
 
-        TextView displayTitle = findViewById(R.id.tv_movie_detail_tiltle);
+        TextView displayTitle = findViewById(R.id.tv_movie_detail_title);
         displayTitle.setVisibility(detailVisability);
 
         TextView displayDescription = findViewById(R.id.tv_movie_detail_description);
@@ -76,7 +76,7 @@ public class DetailedMovieData extends AppCompatActivity {
     }
 
     private void populateDisplayInformation(MovieDetailData movieDetails) {
-        TextView displayTitle = findViewById(R.id.tv_movie_detail_tiltle);
+        TextView displayTitle = findViewById(R.id.tv_movie_detail_title);
         displayTitle.setText(movieDetails.getTitle());
 
         TextView displayDescription = findViewById(R.id.tv_movie_detail_description);
