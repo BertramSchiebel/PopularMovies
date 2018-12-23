@@ -10,14 +10,14 @@ import org.json.JSONObject;
  * the results which will be  parse are from commands like /movie/popular or /movie/top_rated
  */
 public class MovieResultData {
-    private static final String MDB_ID = "id";
-    private static final String MDB_POSTER_PATH = "poster_path";
-    private static final String MDB_TITLE = "title";
+
     private static final String TAG = MovieResultData.class.getSimpleName();
 
-    private String title;
+    private static final String MDB_ID = "id";
+    private static final String MDB_POSTER_PATH = "poster_path";
 
     private String posterPath;
+    private int id;
 
     /**
      * Factory method to create a instance of this class according to a given JSON data string
@@ -39,10 +39,6 @@ public class MovieResultData {
                 resultData.setPosterPath(movieDataJSON.getString(MDB_POSTER_PATH));
             }
 
-            if (movieDataJSON.has(MDB_TITLE)) {
-                resultData.setTitle(movieDataJSON.getString(MDB_TITLE));
-            }
-
         } catch (JSONException e) {
             Log.e(TAG, "Input is not a valid JSON string");
             return null;
@@ -50,34 +46,41 @@ public class MovieResultData {
         return resultData;
     }
 
-    private int id;
 
+    /**
+     * Sets the part of url to the path ov the movie poster
+     *
+     * @param posterPath the given path part
+     */
     private void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
     }
 
+    /**
+     * Gets the complete path to the movie poster
+     *
+     * @return a URL string to the complete path
+     */
     public String getPosterImageUrl() {
         return "https://image.tmdb.org/t/p/w500" + posterPath;
     }
 
+
+    /**
+     * Gets tje Id from the movie
+     *
+     * @return the movie Id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Sets the Id of the movie
+     * @param id the given Id
+     */
     private void setId(int id) {
         this.id = id;
     }
 
-    private String getTitle() {
-        return title;
-    }
-
-    private void setTitle(String title) {
-        this.title = title;
-    }
-
-    @Override
-    public String toString() {
-        return "Id: " + getId() + "; Title: " + getTitle();
-    }
 }

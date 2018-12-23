@@ -20,15 +20,18 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.util.Locale;
 
+/**
+ * This class is responsible for the detaild view of movie
+ */
 public class DetailedMovieData extends AppCompatActivity {
 
     private String mDetailedMovieId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_movie_data);
         this.setTitle(R.string.detailed_movie_title);
-
 
         Intent startActivityIntent = getIntent();
 
@@ -41,12 +44,22 @@ public class DetailedMovieData extends AppCompatActivity {
         loadMovieDetails();
     }
 
+    /**
+     * load the details of a movie by a network request
+     */
     private void loadMovieDetails() {
         String command = "movie/" + mDetailedMovieId;
         new FetchMovieDetailData().execute(command);
 
     }
 
+    /**
+     * Set the visibility of the views in this activity
+     * During loading from the Network most of the views are invisible
+     * after receiving the data the viability will change with this method.
+     *
+     * @param loadingIsActive Indicates weather loading from network is active or not.
+     */
     private void displayLoadingIsActive(boolean loadingIsActive) {
         int detailVisibility = View.VISIBLE;
         int progressVisibility = View.INVISIBLE;
@@ -74,6 +87,12 @@ public class DetailedMovieData extends AppCompatActivity {
         poster.setVisibility(detailVisibility);
     }
 
+
+    /**
+     * Displays the details of a movie in the intended views
+     *
+     * @param movieDetails the given detailed data of the movie
+     */
     private void populateDisplayInformation(MovieDetailData movieDetails) {
         TextView displayTitle = findViewById(R.id.tv_movie_detail_title);
         displayTitle.setText(movieDetails.getTitle());
@@ -103,6 +122,10 @@ public class DetailedMovieData extends AppCompatActivity {
 
     }
 
+
+    /**
+     * Displays an error Message
+     */
     private void showErrorMessage() {
         displayLoadingIsActive(true);
         ProgressBar loadingIndicator = findViewById(R.id.detail_loading_indicator);
@@ -113,15 +136,27 @@ public class DetailedMovieData extends AppCompatActivity {
         errorMessage.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * The Async task to get the movie details from the network
+     */
     @SuppressLint("StaticFieldLeak")
     class FetchMovieDetailData extends AsyncTask<String, Void, String> {
 
+        /**
+         * Settings before executing the async task
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             displayLoadingIsActive(true);
         }
 
+        /**
+         * runs an async task to get data from the internet
+         *
+         * @param params the parameter to build the URL for the network request
+         * @return A JSON string of the network request or null if the request fails
+         */
         @Override
         protected String doInBackground(String... params) {
             if (params.length == 0) {
@@ -138,6 +173,10 @@ public class DetailedMovieData extends AppCompatActivity {
             return response;
         }
 
+        /**
+         * after the task is finished the received data will be processed
+         * @param response the received data from the network request
+         */
         @Override
         protected void onPostExecute(String response) {
             super.onPostExecute(response);

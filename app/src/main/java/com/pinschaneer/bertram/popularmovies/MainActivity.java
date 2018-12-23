@@ -26,6 +26,9 @@ import java.net.URL;
 import java.util.Locale;
 
 
+/**
+ * This class is responsible to display the views of the main activity
+ */
 public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler, AdapterView.OnItemSelectedListener {
     private String mCommand = "movie/popular";
     private RecyclerView mMovieListRecyclerView;
@@ -36,16 +39,27 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private ProgressBar mLoadingPageIndicator;
     private AsyncTask<String, MovieDBPageResult, MovieDBPageResult> mFetchMovieDataTask;
 
+    /**
+     * Display a error message
+     */
     private void showErrorMessage() {
         mMovieListRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Display the results of an Network request.
+     */
     private void showMovieResults() {
         mMovieListRecyclerView.setVisibility(View.VISIBLE);
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * Create the activity
+     *
+     * @param savedInstanceState the saved instant state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         Resources res = getResources();
         String[] mPossibleMovieSelections = res.getStringArray(R.array.movie_list_queries);
         mMovieQuerySpinner.setOnItemSelectedListener(this);
+
         ArrayAdapter<String> movieQuerySpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mPossibleMovieSelections);
         movieQuerySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         mMovieQuerySpinner.setAdapter(movieQuerySpinnerAdapter);
@@ -74,6 +89,10 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         mLoadingPageIndicator = findViewById(R.id.pb_display_page_count);
     }
 
+
+    /**
+     * Load the movie data in an async task
+     */
     private void loadMovieData() {
         if (null != mFetchMovieDataTask) {
             AsyncTask.Status status = mFetchMovieDataTask.getStatus();
@@ -85,6 +104,12 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     }
 
 
+    /**
+     * Event handler for the click on a movie poster
+     * This handler will start a new activity with the detailed movie data
+     *
+     * @param movieData the data of the clicked movie poster
+     */
     @Override
     public void onClick(MovieResultData movieData) {
         Context context = this;
@@ -93,6 +118,14 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         startActivity(startDetailedMovieActivity);
     }
 
+    /**
+     * The event handler for the spinner of the sorting for the movies
+     *
+     * @param adapterView the click adapte view
+     * @param view        the clicked view
+     * @param pos         the position of the adapter clicked
+     * @param id          the Id
+     */
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
 
@@ -111,12 +144,19 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         loadMovieData();
     }
 
+    /**
+     * Auto generated method of  the interface AdapterView.OnItemSelectedListener
+     * @param adapterView the adapter view
+     */
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         //auto generated stub
     }
 
 
+    /**
+     * Async task to get the requested movie data from the network
+     */
     @SuppressLint("StaticFieldLeak")
     private class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
 
@@ -124,10 +164,17 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         private int mCurrentPageLoading;
 
 
+        /**
+         * constructor
+         * @param context the context of the task
+         */
         private FetchMovieDataTask(Context context) {
             this.mContext = context;
         }
 
+        /**
+         * Adjustment before the execution
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -138,21 +185,11 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         }
 
 
-        @Override
-        protected void onCancelled(MovieDBPageResult movieDBPageResult) {
-            super.onCancelled(movieDBPageResult);
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            onPostExecute(null);
-            mLoadingPageIndicator.setVisibility(View.INVISIBLE);
-            mMovieQuerySpinner.setEnabled(true);
-
-        }
-
-
+        /**
+         * The task that is done asynchronously
+         * @param searchParams thr parameter for the network request
+         * @return null
+         */
         @Override
         protected MovieDBPageResult doInBackground(String... searchParams) {
             if (searchParams.length == 0) {
@@ -169,7 +206,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 try {
                     String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
                     pageResult = MovieDBPageResult.createMovieDBPageResult(response);
-                    //totalPages = pageResult.getTotalPages();
                     publishProgress(pageResult);
                     mCurrentPageLoading++;
                 } catch (IOException e) {
@@ -181,6 +217,11 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             return null;
         }
 
+
+        /**
+         * Displays the progress of the async task
+         * @param values the data of the search progres
+         */
         @Override
         protected void onProgressUpdate(MovieDBPageResult... values) {
             super.onProgressUpdate(values);
@@ -193,6 +234,11 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             }
         }
 
+
+        /**
+         * Displays the summery of network request or an error message
+         * @param movieDBPageResult always null
+         */
         @Override
         protected void onPostExecute(MovieDBPageResult movieDBPageResult) {
             super.onPostExecute(movieDBPageResult);

@@ -74,23 +74,45 @@ public class MovieDetailData {
         return movieDetailData;
     }
 
+
+    /**
+     * @return gets the release Date of the movie
+     */
     public Date getReleaseDate() {
         return mReleaseDate;
     }
 
+    /**
+     * Sets the release Date of the movie
+     *
+     * @param releaseDate the given date
+     */
     private void setReleaseDate(Date releaseDate) {
         this.mReleaseDate = releaseDate;
     }
 
 
+    /**
+     * Sets the path to image of the movie poster
+     *
+     * @param posterPath the given path
+     */
     private void setPosterPath(String posterPath) {
         this.mPosterPath = posterPath;
     }
 
+    /**
+     * @return the avarage vote of the movie
+     */
     public double getAverageVote() {
         return mAverageVote;
     }
 
+    /**
+     * Sets the average vote of the movie
+     *
+     * @param averageVote the given average vote
+     */
     private void setAverageVote(double averageVote) {
         this.mAverageVote = averageVote;
     }
@@ -104,7 +126,8 @@ public class MovieDetailData {
 
 
     /**
-     * @param title Set the title of the movie details
+     * Sets the title of the movie
+     * @param title the given title
      */
     private void setTitle(String title) {
         this.mTitle = title;
@@ -118,12 +141,18 @@ public class MovieDetailData {
     }
 
     /**
-     * @param description Sets the description of the movie details
+     * Sets the description of the movie
+     * @param description the given description
      */
     private void setDescription(String description) {
         this.mDescription = description;
     }
 
+
+    /**
+     * Gets a URL string to the movie poster
+     * @return the complete URL if the movie has a path to a image otherwise a empty string
+     */
     public String getPosterImageUrl() {
         if (mPosterPath != null && !mPosterPath.isEmpty()) {
 

@@ -19,6 +19,9 @@ public class MovieDBPageResult {
 
     private ArrayList<MovieResultData> mResults;
 
+    public MovieDBPageResult() {
+        mResults = new ArrayList<>();
+    }
 
     /**
      * Factory method to create a instance of this class according to a given JSON data string
@@ -29,8 +32,6 @@ public class MovieDBPageResult {
     public static MovieDBPageResult createMovieDBPageResult(String jsonDataString
     ) {
         MovieDBPageResult movieDBPageResult = new MovieDBPageResult();
-        ArrayList<MovieResultData> resultDataList = new ArrayList<>();
-        movieDBPageResult.setResults(resultDataList);
         try {
 
             JSONObject listSearchResult = new JSONObject(jsonDataString);
@@ -41,12 +42,12 @@ public class MovieDBPageResult {
                     JSONObject entryJson = resultList.getJSONObject(i);
                     MovieResultData movieResultEntry = MovieResultData.createMovieResultData(entryJson.toString());
                     if (null != movieResultEntry) {
-                        resultDataList.add(movieResultEntry);
+                        movieDBPageResult.getResults().add(movieResultEntry);
                     }
                 }
 
             } else {
-                Log.e(TAG, "input sting has wrong JSON Form");
+                Log.e(TAG, "wrong JSON Format");
             }
 
         } catch (JSONException e) {
@@ -58,13 +59,11 @@ public class MovieDBPageResult {
     }
 
 
+    /**
+     * @return the array list of movie entries from the JSON string
+     */
     public ArrayList<MovieResultData> getResults() {
         return mResults;
     }
-
-    private void setResults(ArrayList<MovieResultData> mResults) {
-        this.mResults = mResults;
-    }
-
 
 }
