@@ -121,7 +121,6 @@ public class DetailedMovieData extends AppCompatActivity {
                 .placeholder(R.drawable.default_poster)
                 .error(R.drawable.error_poster)
                 .into(poster);
-
     }
 
 
@@ -190,7 +189,6 @@ public class DetailedMovieData extends AppCompatActivity {
                 }
             } else {
                 showErrorMessage();
-
             }
         }
     }

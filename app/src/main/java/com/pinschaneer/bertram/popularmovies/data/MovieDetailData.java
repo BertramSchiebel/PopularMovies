@@ -1,6 +1,5 @@
 package com.pinschaneer.bertram.popularmovies.data;
 
-import android.annotation.SuppressLint;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,6 +7,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * This class parse the JSON string for detailed movie information and
@@ -51,7 +51,7 @@ public class MovieDetailData {
 
             if (movieDataJSON.has(MDB_RELEASE_DATE)) {
                 String dateString = movieDataJSON.getString(MDB_RELEASE_DATE);
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                 Date releaseDate;
                 try {
                     releaseDate = format.parse(dateString);

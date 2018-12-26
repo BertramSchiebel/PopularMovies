@@ -47,7 +47,7 @@ public class MovieDBPageResult {
                 }
 
             } else {
-                Log.e(TAG, "wrong JSON Format");
+                Log.e(TAG, "Input is not a valid JSON string");
             }
 
         } catch (JSONException e) {
