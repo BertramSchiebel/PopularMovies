@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
-import com.pinschaneer.bertram.popularmovies.data.MovieResultData;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;
@@ -111,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
      * @param movieData the data of the clicked movie poster
      */
     @Override
-    public void onClick(MovieResultData movieData) {
+    public void onClick(MovieDBPageResult.ResultData movieData) {
         Context context = this;
         Intent startDetailedMovieActivity = new Intent(context, DetailedMovieData.class);
         startDetailedMovieActivity.putExtra(Intent.EXTRA_TEXT, Integer.toString(movieData.getId()));

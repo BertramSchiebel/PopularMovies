@@ -118,6 +118,8 @@ public class DetailedMovieData extends AppCompatActivity {
         ImageView poster = findViewById(R.id.movie_detail_image);
         Picasso.get()
                 .load(movieDetails.getPosterImageUrl())
+                .placeholder(R.drawable.default_poster)
+                .error(R.drawable.error_poster)
                 .into(poster);
 
     }

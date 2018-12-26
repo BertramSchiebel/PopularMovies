@@ -17,7 +17,7 @@ public class MovieDBPageResult {
 
     private static final String MDB_RESULTS = "results";
 
-    private ArrayList<MovieResultData> mResults;
+    private ArrayList<ResultData> mResults;
 
     public MovieDBPageResult() {
         mResults = new ArrayList<>();
@@ -40,7 +40,7 @@ public class MovieDBPageResult {
                 JSONArray resultList = listSearchResult.getJSONArray(MDB_RESULTS);
                 for (int i = 0; i < resultList.length(); i++) {
                     JSONObject entryJson = resultList.getJSONObject(i);
-                    MovieResultData movieResultEntry = MovieResultData.createMovieResultData(entryJson.toString());
+                    ResultData movieResultEntry = ResultData.createMovieResultData(entryJson.toString());
                     if (null != movieResultEntry) {
                         movieDBPageResult.getResults().add(movieResultEntry);
                     }
@@ -62,8 +62,88 @@ public class MovieDBPageResult {
     /**
      * @return the array list of movie entries from the JSON string
      */
-    public ArrayList<MovieResultData> getResults() {
+    public ArrayList<ResultData> getResults() {
         return mResults;
     }
 
+
+    /**
+     * This class parse the single result and holds its data
+     */
+    public static class ResultData {
+
+        private static final String TAG = ResultData.class.getSimpleName();
+
+        private static final String MDB_ID = "id";
+        private static final String MDB_POSTER_PATH = "poster_path";
+
+        private String posterPath;
+        private int id;
+
+        /**
+         * Factory method to create a instance of this class according to a given JSON data string
+         *
+         * @param resultJsonString the JSON data string
+         * @return a Instance of this class or null if parsing has an error
+         */
+        public static ResultData createMovieResultData(String resultJsonString) {
+            ResultData resultData = new ResultData();
+            try {
+                JSONObject movieDataJSON = new JSONObject(resultJsonString);
+                if (movieDataJSON.has(MDB_ID)) {
+                    resultData.setId(movieDataJSON.getInt(MDB_ID));
+                } else {
+                    Log.e(TAG, "Id is not available");
+                    return null;
+                }
+                if (movieDataJSON.has(MDB_POSTER_PATH)) {
+                    resultData.setPosterPath(movieDataJSON.getString(MDB_POSTER_PATH));
+                }
+
+            } catch (JSONException e) {
+                Log.e(TAG, "Input is not a valid JSON string");
+                return null;
+            }
+            return resultData;
+        }
+
+
+        /**
+         * Sets the part of url to the path ov the movie poster
+         *
+         * @param posterPath the given path part
+         */
+        private void setPosterPath(String posterPath) {
+            this.posterPath = posterPath;
+        }
+
+        /**
+         * Gets the complete path to the movie poster
+         *
+         * @return a URL string to the complete path
+         */
+        public String getPosterImageUrl() {
+            return "https://image.tmdb.org/t/p/w500" + posterPath;
+        }
+
+
+        /**
+         * Gets tje Id from the movie
+         *
+         * @return the movie Id
+         */
+        public int getId() {
+            return id;
+        }
+
+        /**
+         * Sets the Id of the movie
+         *
+         * @param id the given Id
+         */
+        private void setId(int id) {
+            this.id = id;
+        }
+
+    }
 }

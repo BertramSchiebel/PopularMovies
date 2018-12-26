@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.pinschaneer.bertram.popularmovies.data.MovieResultData;
+import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapterViewHolder> {
 
     private final MovieListAdapterOnClickHandler mCLickHandler;
-    private ArrayList<MovieResultData> mMovieDataList;
+    private ArrayList<MovieDBPageResult.ResultData> mMovieDataList;
 
 
     /**
@@ -56,9 +56,11 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
      */
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
-        MovieResultData data = mMovieDataList.get(position);
+        MovieDBPageResult.ResultData data = mMovieDataList.get(position);
         Picasso.get()
                 .load(data.getPosterImageUrl())
+                .placeholder(R.drawable.default_poster)
+                .error(R.drawable.error_poster)
                 .into(holder.mMovieDataImage);
 
     }
@@ -78,7 +80,7 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
      * Sets the data in the list of the adapter
      * @param data the new data
      */
-    public void setMovieData(ArrayList<MovieResultData> data) {
+    public void setMovieData(ArrayList<MovieDBPageResult.ResultData> data) {
         if (mMovieDataList == null) {
             mMovieDataList = data;
         } else {
@@ -103,7 +105,7 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
      * The interface that receives onClick messages.
      */
     public interface MovieListAdapterOnClickHandler {
-        void onClick(MovieResultData movieData);
+        void onClick(MovieDBPageResult.ResultData movieData);
     }
 
 
@@ -131,7 +133,7 @@ class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapte
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
-            MovieResultData data = mMovieDataList.get(position);
+            MovieDBPageResult.ResultData data = mMovieDataList.get(position);
             mCLickHandler.onClick(data);
         }
     }
