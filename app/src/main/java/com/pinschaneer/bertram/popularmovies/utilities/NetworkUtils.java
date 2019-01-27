@@ -29,7 +29,7 @@ public class NetworkUtils {
      * These Api key is your personal key in order to communicate you have to
      * receive your key from the website  https://www.themoviedb.org/
      */
-    private static final String API_KEY = "";
+    private static final String API_KEY = "3c37ddd9c285cc94e0e3da1517089eb0";
 
     private static final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3";
 
