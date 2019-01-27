@@ -16,7 +16,7 @@ This app will:
 
 ## APK Key
 Youn need a APK key from [www.themoviedb.org](https://www.themoviedb.org).
-After you have received your APK key it must be stored in the file [NetworkUtils.java](./app/src/main/java/com/pinschaneer/bertram/popularmovies/utilities/NetworkUtils.java).
+After you have received your APK key it must be stored in the file [NetworkUtils.java](./app/src/main/java/com/pinschaneer/bertram/popularmovies/utilities/MovieDb_APKKey.java).
 
 ```java
 
