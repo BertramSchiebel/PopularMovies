@@ -25,12 +25,6 @@ public class NetworkUtils {
     private final static String PAGE_PARAM = "page";
 
 
-    /**
-     * These Api key is your personal key in order to communicate you have to
-     * receive your key from the website  https://www.themoviedb.org/
-     */
-    private static final String API_KEY = "";
-
     private static final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3";
 
     /**
@@ -43,7 +37,7 @@ public class NetworkUtils {
     public static URL buildUrl(String movieCommand, String page) {
         String baseUrl = MOVIE_DB_BASE_URL + "/" + movieCommand;
         Uri builtUri = Uri.parse(baseUrl).buildUpon()
-                .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                .appendQueryParameter(API_KEY_PARAM, MovieDb_APKKey.API_KEY)
                 .appendQueryParameter(LANGUAGE_PARAM, "en-US")
                 .appendQueryParameter(PAGE_PARAM, page)
                 .build();
