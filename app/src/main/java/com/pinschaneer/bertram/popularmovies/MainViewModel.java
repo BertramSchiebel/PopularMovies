@@ -7,6 +7,16 @@ public class MainViewModel extends AndroidViewModel
 {
     private MovieListAdapter movieListAdapter;
 
+    private String command = "movie/popular";
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
     public MainViewModel(Application application,
                          MovieListAdapter.MovieListAdapterOnClickHandler clickHandler) {
         super(application);

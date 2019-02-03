@@ -30,7 +30,7 @@ import java.util.Locale;
  * This class is responsible to display the views of the main activity
  */
 public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler, AdapterView.OnItemSelectedListener {
-    private String mCommand = "movie/popular";
+
     private RecyclerView mMovieListRecyclerView;
 
     private MainViewModel viewModel;
@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         if (!viewModel.hasData()) {
             mFetchMovieDataTask = new FetchMovieDataTask(this);
         }
-
         mLoadingPageIndicator = findViewById(R.id.pb_display_page_count);
     }
 
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             AsyncTask.Status status = mFetchMovieDataTask.getStatus();
             if (status != AsyncTask.Status.RUNNING) {
                 viewModel.getMovieListAdapter().clearMovieData();
-                mFetchMovieDataTask = new FetchMovieDataTask(this).execute(mCommand);
+                mFetchMovieDataTask = new FetchMovieDataTask(this).execute(viewModel.getCommand());
             }
         }
     }
@@ -136,14 +135,14 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         switch (pos) {
             case 0:
-                mCommand = getString(R.string.most_popular_command);
+                viewModel.setCommand(getString(R.string.most_popular_command));
                 break;
             case 1:
-                mCommand = getString(R.string.top_rated_command);
+                viewModel.setCommand(getString(R.string.top_rated_command));
                 break;
 
             default:
-                mCommand = getString(R.string.most_popular_command);
+                viewModel.setCommand(getString(R.string.most_popular_command));
         }
 
         loadMovieData();
