@@ -1,9 +1,11 @@
-package com.pinschaneer.bertram.popularmovies.activities;
+package com.pinschaneer.bertram.popularmovies.activities.ViewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
+
+import com.pinschaneer.bertram.popularmovies.data.MovieListAdapter;
 
 public class MainViewModelFactory implements ViewModelProvider.Factory
 {

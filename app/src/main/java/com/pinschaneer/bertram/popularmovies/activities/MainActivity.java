@@ -19,7 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pinschaneer.bertram.popularmovies.R;
+import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModel;
+import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModelFactory;
 import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
+import com.pinschaneer.bertram.popularmovies.data.MovieListAdapter;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;

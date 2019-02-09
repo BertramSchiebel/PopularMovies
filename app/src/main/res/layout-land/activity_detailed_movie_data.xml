@@ -119,8 +119,8 @@
                 android:id="@+id/tv_movie_detail_description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
                 android:paddingBottom="16dp"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
@@ -128,6 +128,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/label_movie_description"
                 app:layout_constraintTop_toBottomOf="@+id/label_movie_description"
+                app:layout_constraintVertical_bias="0.49"
                 tools:text="@tools:sample/lorem/random"/>
 
             <TextView

@@ -1,4 +1,4 @@
-package com.pinschaneer.bertram.popularmovies.activities;
+package com.pinschaneer.bertram.popularmovies.data;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.pinschaneer.bertram.popularmovies.R;
-import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -17,7 +16,8 @@ import java.util.ArrayList;
 /**
  * Adapter for the recycler view
  */
-class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapterViewHolder> {
+public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieAdapterViewHolder>
+{
 
     private final MovieListAdapterOnClickHandler mCLickHandler;
     private ArrayList<MovieDBPageResult.ResultData> mMovieDataList;
