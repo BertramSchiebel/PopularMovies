@@ -1,7 +1,9 @@
-package com.pinschaneer.bertram.popularmovies;
+package com.pinschaneer.bertram.popularmovies.activities;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+
+import com.pinschaneer.bertram.popularmovies.activities.MovieListAdapter;
 
 public class MainViewModel extends AndroidViewModel
 {

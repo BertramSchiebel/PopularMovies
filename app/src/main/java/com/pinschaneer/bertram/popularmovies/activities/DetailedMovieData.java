@@ -1,4 +1,4 @@
-package com.pinschaneer.bertram.popularmovies;
+package com.pinschaneer.bertram.popularmovies.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -103,8 +104,7 @@ public class DetailedMovieData extends AppCompatActivity {
         TextView displayRating = findViewById(R.id.movie_detail_rating);
         String rating = String.format(Locale.getDefault(), "%.1f/10", movieDetails.getAverageVote());
 
-        Resources resources = getResources();
-        String ratingText = resources.getString(R.string.rating) + "\n" + rating;
+        String ratingText = rating;
         displayRating.setText(ratingText);
 
         TextView displayReleaseDate = findViewById(R.id.movie_detail_release_date);
@@ -112,7 +112,7 @@ public class DetailedMovieData extends AppCompatActivity {
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, current);
         String releaseDate = dateFormat.format(movieDetails.getReleaseDate());
 
-        String releaseDateText = resources.getString(R.string.release_date) + "\n" + releaseDate;
+        String releaseDateText = releaseDate;
         displayReleaseDate.setText(releaseDateText);
 
         ImageView poster = findViewById(R.id.movie_detail_image);

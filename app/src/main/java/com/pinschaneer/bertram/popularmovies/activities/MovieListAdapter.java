@@ -1,4 +1,4 @@
-package com.pinschaneer.bertram.popularmovies;
+package com.pinschaneer.bertram.popularmovies.activities;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
 import com.squareup.picasso.Picasso;
 

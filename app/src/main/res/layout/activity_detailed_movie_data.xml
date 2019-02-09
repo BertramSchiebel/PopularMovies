@@ -5,7 +5,7 @@
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
              android:orientation="vertical"
-             tools:context=".DetailedMovieData">
+             tools:context=".activities.DetailedMovieData">
 
     <ProgressBar
         android:id="@+id/detail_loading_indicator"
@@ -34,7 +34,7 @@
         android:layout_height="match_parent">
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/detailed_view_data"
+            android:id="@+id/label_movie_detail_release_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp">
@@ -69,17 +69,28 @@
                 android:id="@+id/movie_detail_release_date"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:text="@string/release_date"
                 android:textAlignment="viewStart"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/movie_detail_image"
-                app:layout_constraintTop_toTopOf="@+id/movie_detail_image"/>
+                app:layout_constraintStart_toStartOf="@+id/label_movie_detail_release_date2"
+                app:layout_constraintTop_toBottomOf="@+id/label_movie_detail_release_date2"
+                tools:text="Dec, 27 2018"/>
 
             <TextView
                 android:id="@+id/movie_detail_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:textAlignment="viewStart"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/label_movie_detail_rating"
+                app:layout_constraintTop_toBottomOf="@+id/label_movie_detail_rating"
+                tools:text="8/10"/>
+
+            <TextView
+                android:id="@+id/label_movie_detail_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginTop="16dp"
@@ -92,22 +103,45 @@
                 app:layout_constraintTop_toBottomOf="@+id/movie_detail_release_date"/>
 
             <TextView
+                android:id="@+id/label_movie_description"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/description_label"
+                android:textAlignment="viewStart"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/movie_detail_image"
+                app:layout_constraintTop_toBottomOf="@+id/movie_detail_image"/>
+
+            <TextView
                 android:id="@+id/tv_movie_detail_description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:paddingBottom="16dp"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/movie_detail_image"
+                app:layout_constraintStart_toStartOf="@+id/label_movie_description"
+                app:layout_constraintTop_toBottomOf="@+id/label_movie_description"
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="@tools:sample/lorem/random"/>
+
+            <TextView
+                android:id="@+id/label_movie_detail_release_date2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/release_date"
+                android:textAlignment="viewStart"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/movie_detail_image"
+                app:layout_constraintTop_toTopOf="@+id/movie_detail_image"/>
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>

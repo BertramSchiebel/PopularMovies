@@ -1,4 +1,4 @@
-package com.pinschaneer.bertram.popularmovies;
+package com.pinschaneer.bertram.popularmovies.activities;
 
 import android.app.Application;
 import android.arch.lifecycle.ViewModel;

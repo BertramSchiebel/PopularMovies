@@ -10,6 +10,7 @@
     <string name="message_loaded_data_set">Download finished, received : %d data sets</string>
     <string name="most_popular_command">movie/popular</string>
     <string name="top_rated_command">movie/top_rated</string>
+    <string name="description_label">Description</string>
     <string-array name="movie_list_queries">
         <item>most popular</item>
         <item>highest rated</item>

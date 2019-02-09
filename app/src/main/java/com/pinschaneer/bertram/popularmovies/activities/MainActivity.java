@@ -1,4 +1,4 @@
-package com.pinschaneer.bertram.popularmovies;
+package com.pinschaneer.bertram.popularmovies.activities;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
