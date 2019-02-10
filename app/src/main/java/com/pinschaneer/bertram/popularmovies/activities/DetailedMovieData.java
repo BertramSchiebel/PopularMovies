@@ -1,10 +1,11 @@
 package com.pinschaneer.bertram.popularmovies.activities;
 
-import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,21 +13,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.pinschaneer.bertram.popularmovies.R;
+import com.pinschaneer.bertram.popularmovies.activities.ViewModel.DetailedMovieDataViewModel;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
-import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.util.Locale;
 
 /**
- * This class is responsible for the detaild view of movie
+ * This class is responsible for the detailed view of movie
  */
 public class DetailedMovieData extends AppCompatActivity {
 
     private String mDetailedMovieId;
+    private DetailedMovieDataViewModel viewModel;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,17 +44,22 @@ public class DetailedMovieData extends AppCompatActivity {
             }
         }
 
-        loadMovieDetails();
+        viewModel = ViewModelProviders.of(this).get(DetailedMovieDataViewModel.class);
+        if (!viewModel.hasData()) {
+            viewModel.init(mDetailedMovieId);
+        }
+
+        viewModel.getMovieData().observe(this, new Observer<MovieDetailData>()
+        {
+            @Override
+            public void onChanged(@Nullable MovieDetailData movieDetails) {
+                DetailedMovieData.this.populateDisplayInformation(movieDetails);
+            }
+        });
+
     }
 
-    /**
-     * load the details of a movie by a network request
-     */
-    private void loadMovieDetails() {
-        String command = "movie/" + mDetailedMovieId;
-        new FetchMovieDetailData().execute(command);
 
-    }
 
     /**
      * Set the visibility of the views in this activity
@@ -95,6 +102,16 @@ public class DetailedMovieData extends AppCompatActivity {
      * @param movieDetails the given detailed data of the movie
      */
     private void populateDisplayInformation(MovieDetailData movieDetails) {
+        displayLoadingIsActive(viewModel.isLoadingActive());
+        if (viewModel.isLoadingActive()) {
+            return;
+        }
+
+        if (!viewModel.isLoadingSuccessfull()) {
+            showErrorMessage();
+            return;
+        }
+
         TextView displayTitle = findViewById(R.id.tv_movie_detail_title);
         displayTitle.setText(movieDetails.getTitle());
 
@@ -137,59 +154,4 @@ public class DetailedMovieData extends AppCompatActivity {
         errorMessage.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * The Async task to get the movie details from the network
-     */
-    @SuppressLint("StaticFieldLeak")
-    class FetchMovieDetailData extends AsyncTask<String, Void, String> {
-
-        /**
-         * Settings before executing the async task
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            displayLoadingIsActive(true);
-        }
-
-        /**
-         * runs an async task to get data from the internet
-         *
-         * @param params the parameter to build the URL for the network request
-         * @return A JSON string of the network request or null if the request fails
-         */
-        @Override
-        protected String doInBackground(String... params) {
-            if (params.length == 0) {
-                return null;
-            }
-            String response;
-            URL movieDbUrl = NetworkUtils.buildUrl(params[0], "1");
-            try {
-                response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-            return response;
-        }
-
-        /**
-         * after the task is finished the received data will be processed
-         * @param response the received data from the network request
-         */
-        @Override
-        protected void onPostExecute(String response) {
-            super.onPostExecute(response);
-            if (response != null) {
-                MovieDetailData movieDetails = MovieDetailData.crateMovieDetailData(response);
-                if (movieDetails != null) {
-                    displayLoadingIsActive(false);
-                    populateDisplayInformation(movieDetails);
-                }
-            } else {
-                showErrorMessage();
-            }
-        }
-    }
 }
