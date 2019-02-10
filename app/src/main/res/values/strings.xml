@@ -11,6 +11,9 @@
     <string name="most_popular_command">movie/popular</string>
     <string name="top_rated_command">movie/top_rated</string>
     <string name="description_label">Description</string>
+    <string name="tb_mark_as_favorite_text">Mark as Favorite</string>
+    <string name="tb_mark_as_favorite_off_text">Mark as Favorite</string>
+    <string name="tb_mark_as_favorite_on_text">Is marked as Favorite</string>
     <string-array name="movie_list_queries">
         <item>most popular</item>
         <item>highest rated</item>

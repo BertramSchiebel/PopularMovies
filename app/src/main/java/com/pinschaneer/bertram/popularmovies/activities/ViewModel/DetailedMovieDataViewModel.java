@@ -2,14 +2,18 @@ package com.pinschaneer.bertram.popularmovies.activities.ViewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
+import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
+import com.pinschaneer.bertram.popularmovies.data.StaredMovieDataBase;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 public class DetailedMovieDataViewModel extends AndroidViewModel
 {
@@ -18,10 +22,18 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
     private boolean isLoadingSuccessfull;
     private MutableLiveData<MovieDetailData> movieData;
 
+    private LiveData<List<MovieDataEntry>> starredMovies;
+    private StaredMovieDataBase movieDataBase;
+
     public DetailedMovieDataViewModel(Application application) {
 
         super(application);
         movieId = "";
+        movieDataBase = StaredMovieDataBase.getInstance(application.getApplicationContext());
+    }
+
+    public LiveData<List<MovieDataEntry>> getStarredMovies() {
+        return starredMovies;
     }
 
     public boolean isLoadingActive() {
@@ -44,6 +56,7 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
         this.movieId = movieId;
         loadMovieDetails();
         movieData = new MutableLiveData<>();
+        starredMovies = movieDataBase.movieDataDao().getAllMovieData();
     }
 
     /**
@@ -52,6 +65,15 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
     private void loadMovieDetails() {
         String command = "movie/" + movieId;
         new FetchMovieDetailData().execute(command);
+    }
+
+    public void markAsFavorite() {
+        if (movieData == null) {
+            return;
+        }
+        MovieDetailData data = movieData.getValue();
+        MovieDataEntry movieDataEntry = new MovieDataEntry(movieId, data.getTitle(), data.getPosterImageUrl(), data.getDescription(), data.getAverageVote(), data.getReleaseDate());
+        movieDataBase.movieDataDao().insertMovieData(movieDataEntry);
     }
 
 

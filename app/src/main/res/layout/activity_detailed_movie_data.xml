@@ -143,6 +143,20 @@
                 app:layout_constraintStart_toEndOf="@+id/movie_detail_image"
                 app:layout_constraintTop_toTopOf="@+id/movie_detail_image"/>
 
+            <ToggleButton
+                android:id="@+id/toggleButtonMarkAsFavorite"
+                style="@style/AlertDialog.AppCompat.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:checked="false"
+                android:onClick="favoriteClicked"
+                android:text="@string/tb_mark_as_favorite_text"
+                android:textOff="@string/tb_mark_as_favorite_off_text"
+                android:textOn="@string/tb_mark_as_favorite_on_text"
+                app:layout_constraintStart_toStartOf="@+id/movie_detail_rating"
+                app:layout_constraintTop_toBottomOf="@+id/movie_detail_rating"/>
+
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 

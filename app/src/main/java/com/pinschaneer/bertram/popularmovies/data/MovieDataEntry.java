@@ -3,6 +3,7 @@ package com.pinschaneer.bertram.popularmovies.data;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import java.util.Date;
 
@@ -13,14 +14,15 @@ import java.util.Date;
 public class MovieDataEntry
 {
     @PrimaryKey
-    private int id;
+    private @NonNull
+    String id;
     private String title;
     private String posterPath;
     private String description;
     private double averageVote;
     private Date releaseDate;
 
-    public MovieDataEntry(int id, String title, String posterPath, String description,
+    public MovieDataEntry(@NonNull String id, String title, String posterPath, String description,
                           double averageVote, Date releaseDate) {
         this.id = id;
         this.title = title;
@@ -30,11 +32,11 @@ public class MovieDataEntry
         this.releaseDate = releaseDate;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 

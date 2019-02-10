@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.activities.ViewModel.DetailedMovieDataViewModel;
@@ -154,4 +155,16 @@ public class DetailedMovieData extends AppCompatActivity {
         errorMessage.setVisibility(View.VISIBLE);
     }
 
+    public void favoriteClicked(View view) {
+        ToggleButton tb = (ToggleButton) view;
+        if (tb != null) {
+            if (tb.isChecked()) {
+                // mark this movie as favorite
+                viewModel.markAsFavorite();
+            }
+            else {
+
+            }
+        }
+    }
 }
