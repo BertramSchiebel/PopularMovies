@@ -1,8 +1,10 @@
-package com.pinschaneer.bertram.popularmovies;
+package com.pinschaneer.bertram.popularmovies.activities;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,7 +19,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pinschaneer.bertram.popularmovies.R;
+import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModel;
+import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModelFactory;
 import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
+import com.pinschaneer.bertram.popularmovies.data.MovieListAdapter;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;
@@ -29,9 +35,10 @@ import java.util.Locale;
  * This class is responsible to display the views of the main activity
  */
 public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler, AdapterView.OnItemSelectedListener {
-    private String mCommand = "movie/popular";
+
     private RecyclerView mMovieListRecyclerView;
-    private MovieListAdapter mMovieListAdapter;
+
+    private MainViewModel viewModel;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
     private Spinner mMovieQuerySpinner;
@@ -63,12 +70,22 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        int spanCount;
+        Configuration configuration = getResources().getConfiguration();
+        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            spanCount = 2;
+        }
+        else {
+            spanCount = 3;
+        }
 
         mMovieListRecyclerView = findViewById(R.id.rv_movie_list);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
         mMovieListRecyclerView.setLayoutManager(layoutManager);
-        mMovieListAdapter = new MovieListAdapter(this);
-        mMovieListRecyclerView.setAdapter(mMovieListAdapter);
+        viewModel = ViewModelProviders.of(this, new MainViewModelFactory(this.getApplication(), this)).get(MainViewModel.class);
+
+
+        mMovieListRecyclerView.setAdapter(viewModel.getMovieListAdapter());
 
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
 
@@ -83,8 +100,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         movieQuerySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         mMovieQuerySpinner.setAdapter(movieQuerySpinnerAdapter);
 
-        mFetchMovieDataTask = new FetchMovieDataTask(this);
-
+        if (!viewModel.hasData()) {
+            mFetchMovieDataTask = new FetchMovieDataTask(this);
+        }
         mLoadingPageIndicator = findViewById(R.id.pb_display_page_count);
     }
 
@@ -96,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         if (null != mFetchMovieDataTask) {
             AsyncTask.Status status = mFetchMovieDataTask.getStatus();
             if (status != AsyncTask.Status.RUNNING) {
-                mMovieListAdapter.clearMovieData();
-                mFetchMovieDataTask = new FetchMovieDataTask(this).execute(mCommand);
+                viewModel.getMovieListAdapter().clearMovieData();
+                mFetchMovieDataTask = new FetchMovieDataTask(this).execute(viewModel.getCommand());
             }
         }
     }
@@ -130,14 +148,14 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         switch (pos) {
             case 0:
-                mCommand = getString(R.string.most_popular_command);
+                viewModel.setCommand(getString(R.string.most_popular_command));
                 break;
             case 1:
-                mCommand = getString(R.string.top_rated_command);
+                viewModel.setCommand(getString(R.string.top_rated_command));
                 break;
 
             default:
-                mCommand = getString(R.string.most_popular_command);
+                viewModel.setCommand(getString(R.string.most_popular_command));
         }
 
         loadMovieData();
@@ -227,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
             if (values.length > 0) {
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
-                mMovieListAdapter.setMovieData(values[0].getResults());
+                viewModel.getMovieListAdapter().setMovieData(values[0].getResults());
                 mLoadingPageIndicator.setProgress(mCurrentPageLoading);
                 showMovieResults();
             }
@@ -245,12 +263,12 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             mMovieQuerySpinner.setEnabled(true);
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             mLoadingPageIndicator.setVisibility(View.INVISIBLE);
-            if (mMovieListAdapter.getItemCount() == 0) {
+            if (viewModel.getMovieListAdapter().getItemCount() == 0) {
                 mErrorMessageDisplay.setText(R.string.error_message);
                 showErrorMessage();
             } else {
 
-                String msg = String.format(Locale.getDefault(), getString(R.string.message_loaded_data_set), mMovieListAdapter.getItemCount());
+                String msg = String.format(Locale.getDefault(), getString(R.string.message_loaded_data_set), viewModel.getMovieListAdapter().getItemCount());
                 Toast.makeText(mContext, msg, Toast.LENGTH_LONG)
                         .show();
 
