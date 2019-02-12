@@ -15,7 +15,10 @@ import android.widget.ToggleButton;
 
 import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.activities.ViewModel.DetailedMovieDataViewModel;
+import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
+import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
+import com.pinschaneer.bertram.popularmovies.data.StaredMovieDataBase;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -24,12 +27,12 @@ import java.util.Locale;
 /**
  * This class is responsible for the detailed view of movie
  */
-public class DetailedMovieData extends AppCompatActivity {
+public class DetailedMovieData extends AppCompatActivity
+{
 
+    StaredMovieDataBase db;
     private String mDetailedMovieId;
     private DetailedMovieDataViewModel viewModel;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class DetailedMovieData extends AppCompatActivity {
         this.setTitle(R.string.detailed_movie_title);
 
         Intent startActivityIntent = getIntent();
+        db = StaredMovieDataBase.getInstance(getApplication());
 
         if (startActivityIntent != null) {
             if (startActivityIntent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -59,7 +63,6 @@ public class DetailedMovieData extends AppCompatActivity {
         });
 
     }
-
 
 
     /**
@@ -112,6 +115,10 @@ public class DetailedMovieData extends AppCompatActivity {
             showErrorMessage();
             return;
         }
+        if (isMarkedAsFavorite(mDetailedMovieId)) {
+            ToggleButton markFavorite = findViewById(R.id.toggleButtonMarkAsFavorite);
+            markFavorite.setChecked(true);
+        }
 
         TextView displayTitle = findViewById(R.id.tv_movie_detail_title);
         displayTitle.setText(movieDetails.getTitle());
@@ -134,11 +141,7 @@ public class DetailedMovieData extends AppCompatActivity {
         displayReleaseDate.setText(releaseDateText);
 
         ImageView poster = findViewById(R.id.movie_detail_image);
-        Picasso.get()
-                .load(movieDetails.getPosterImageUrl())
-                .placeholder(R.drawable.default_poster)
-                .error(R.drawable.error_poster)
-                .into(poster);
+        Picasso.get().load(movieDetails.getPosterImageUrl()).placeholder(R.drawable.default_poster).error(R.drawable.error_poster).into(poster);
     }
 
 
@@ -159,12 +162,64 @@ public class DetailedMovieData extends AppCompatActivity {
         ToggleButton tb = (ToggleButton) view;
         if (tb != null) {
             if (tb.isChecked()) {
+
                 // mark this movie as favorite
-                viewModel.markAsFavorite();
+                markAsFavorite();
             }
             else {
-
+                deleteAsFavorite();
             }
         }
     }
+
+    private void deleteAsFavorite() {
+        final MovieDataEntry itemToDelete = getFavoriteMovie(mDetailedMovieId);
+        if (!(itemToDelete == null)) {
+            viewModel.getFavoriteMovies().remove(itemToDelete);
+            DataBaseExecutor.getInstance().diskIO().execute(new Runnable()
+            {
+                @Override
+                public void run() {
+                    db.movieDataDao().deleteMovieData(itemToDelete);
+                }
+            });
+        }
+
+    }
+
+    private MovieDataEntry getFavoriteMovie(String mDetailedMovieId) {
+        MovieDataEntry movieDataEntry = null;
+        for (MovieDataEntry movie : viewModel.getFavoriteMovies()) {
+            if (movie.getId().equals(mDetailedMovieId)) {
+                movieDataEntry = movie;
+                break;
+            }
+        }
+        return movieDataEntry;
+    }
+
+    private void markAsFavorite() {
+
+        final MovieDataEntry movieDataEntry = viewModel.getMovieDataEntry();
+
+        DataBaseExecutor.getInstance().diskIO().execute(new Runnable()
+        {
+            @Override
+            public void run() {
+                db.movieDataDao().insertMovieData(movieDataEntry);
+            }
+        });
+
+    }
+
+    private boolean isMarkedAsFavorite(String movieId) {
+        for (MovieDataEntry movie : viewModel.getFavoriteMovies()) {
+            if (movieId.equals(movie.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

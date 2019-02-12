@@ -2,10 +2,10 @@ package com.pinschaneer.bertram.popularmovies.activities.ViewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
+import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
 import com.pinschaneer.bertram.popularmovies.data.StaredMovieDataBase;
@@ -22,7 +22,7 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
     private boolean isLoadingSuccessfull;
     private MutableLiveData<MovieDetailData> movieData;
 
-    private LiveData<List<MovieDataEntry>> starredMovies;
+    private List<MovieDataEntry> favoriteMovies;
     private StaredMovieDataBase movieDataBase;
 
     public DetailedMovieDataViewModel(Application application) {
@@ -32,8 +32,8 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
         movieDataBase = StaredMovieDataBase.getInstance(application.getApplicationContext());
     }
 
-    public LiveData<List<MovieDataEntry>> getStarredMovies() {
-        return starredMovies;
+    public List<MovieDataEntry> getFavoriteMovies() {
+        return favoriteMovies;
     }
 
     public boolean isLoadingActive() {
@@ -56,7 +56,14 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
         this.movieId = movieId;
         loadMovieDetails();
         movieData = new MutableLiveData<>();
-        starredMovies = movieDataBase.movieDataDao().getAllMovieData();
+
+        DataBaseExecutor.getInstance().diskIO().execute(new Runnable()
+        {
+            @Override
+            public void run() {
+                favoriteMovies = movieDataBase.movieDataDao().getAllMovieData();
+            }
+        });
     }
 
     /**
@@ -67,15 +74,14 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
         new FetchMovieDetailData().execute(command);
     }
 
-    public void markAsFavorite() {
+    public MovieDataEntry getMovieDataEntry() {
         if (movieData == null) {
-            return;
+            return null;
         }
         MovieDetailData data = movieData.getValue();
-        MovieDataEntry movieDataEntry = new MovieDataEntry(movieId, data.getTitle(), data.getPosterImageUrl(), data.getDescription(), data.getAverageVote(), data.getReleaseDate());
-        movieDataBase.movieDataDao().insertMovieData(movieDataEntry);
+        final MovieDataEntry movieDataEntry = new MovieDataEntry(movieId, data.getTitle(), data.getPosterImageUrl(), data.getDescription(), data.getAverageVote(), data.getReleaseDate());
+        return movieDataEntry;
     }
-
 
     class FetchMovieDetailData extends AsyncTask<String, Void, String>
     {
