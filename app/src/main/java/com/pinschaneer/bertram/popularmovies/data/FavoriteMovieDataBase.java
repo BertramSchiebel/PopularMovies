@@ -9,19 +9,19 @@ import android.util.Log;
 
 @Database(entities = {MovieDataEntry.class}, version = 1, exportSchema = false)
 @TypeConverters(DateConverter.class)
-public abstract class StaredMovieDataBase extends RoomDatabase
+public abstract class FavoriteMovieDataBase extends RoomDatabase
 {
-    private static final String LOG_TAG = StaredMovieDataBase.class.getSimpleName();
+    private static final String LOG_TAG = FavoriteMovieDataBase.class.getSimpleName();
     private static final Object LOCK = new Object();
     private static final String DATABASE_NAME = "staredMovies";
-    private static StaredMovieDataBase instance;
+    private static FavoriteMovieDataBase instance;
 
 
-    public static StaredMovieDataBase getInstance(Context context) {
+    public static FavoriteMovieDataBase getInstance(Context context) {
         if (instance == null) {
             synchronized (LOCK) {
                 Log.d(LOG_TAG, "Create new Database");
-                instance = Room.databaseBuilder(context.getApplicationContext(), StaredMovieDataBase.class, DATABASE_NAME).build();
+                instance = Room.databaseBuilder(context.getApplicationContext(), FavoriteMovieDataBase.class, DATABASE_NAME).build();
             }
         }
         Log.d(LOG_TAG, "Get the Database");

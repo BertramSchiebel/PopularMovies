@@ -6,9 +6,9 @@ import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
 import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
+import com.pinschaneer.bertram.popularmovies.data.FavoriteMovieDataBase;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
-import com.pinschaneer.bertram.popularmovies.data.StaredMovieDataBase;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;
@@ -23,13 +23,18 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
     private MutableLiveData<MovieDetailData> movieData;
 
     private List<MovieDataEntry> favoriteMovies;
-    private StaredMovieDataBase movieDataBase;
+
+    private FavoriteMovieDataBase movieDataBase;
 
     public DetailedMovieDataViewModel(Application application) {
 
         super(application);
         movieId = "";
-        movieDataBase = StaredMovieDataBase.getInstance(application.getApplicationContext());
+        movieDataBase = FavoriteMovieDataBase.getInstance(application.getApplicationContext());
+    }
+
+    public FavoriteMovieDataBase getMovieDataBase() {
+        return movieDataBase;
     }
 
     public List<MovieDataEntry> getFavoriteMovies() {
@@ -79,11 +84,10 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
             return null;
         }
         MovieDetailData data = movieData.getValue();
-        final MovieDataEntry movieDataEntry = new MovieDataEntry(movieId, data.getTitle(), data.getPosterImageUrl(), data.getDescription(), data.getAverageVote(), data.getReleaseDate());
-        return movieDataEntry;
+        return new MovieDataEntry(movieId, data.getTitle(), data.getPosterImageUrl(), data.getDescription(), data.getAverageVote(), data.getReleaseDate());
     }
 
-    class FetchMovieDetailData extends AsyncTask<String, Void, String>
+    private class FetchMovieDetailData extends AsyncTask<String, Void, String>
     {
 
         /**

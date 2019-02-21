@@ -18,7 +18,6 @@ import com.pinschaneer.bertram.popularmovies.activities.ViewModel.DetailedMovieD
 import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
-import com.pinschaneer.bertram.popularmovies.data.StaredMovieDataBase;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -30,7 +29,6 @@ import java.util.Locale;
 public class DetailedMovieData extends AppCompatActivity
 {
 
-    StaredMovieDataBase db;
     private String mDetailedMovieId;
     private DetailedMovieDataViewModel viewModel;
 
@@ -41,7 +39,6 @@ public class DetailedMovieData extends AppCompatActivity
         this.setTitle(R.string.detailed_movie_title);
 
         Intent startActivityIntent = getIntent();
-        db = StaredMovieDataBase.getInstance(getApplication());
 
         if (startActivityIntent != null) {
             if (startActivityIntent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -127,18 +124,14 @@ public class DetailedMovieData extends AppCompatActivity
         displayDescription.setText(movieDetails.getDescription());
 
         TextView displayRating = findViewById(R.id.movie_detail_rating);
-        String rating = String.format(Locale.getDefault(), "%.1f/10", movieDetails.getAverageVote());
 
-        String ratingText = rating;
-        displayRating.setText(ratingText);
+        displayRating.setText(String.format(Locale.getDefault(), "%.1f/10", movieDetails.getAverageVote()));
 
         TextView displayReleaseDate = findViewById(R.id.movie_detail_release_date);
         Locale current = getResources().getConfiguration().locale;
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, current);
-        String releaseDate = dateFormat.format(movieDetails.getReleaseDate());
 
-        String releaseDateText = releaseDate;
-        displayReleaseDate.setText(releaseDateText);
+        displayReleaseDate.setText(dateFormat.format(movieDetails.getReleaseDate()));
 
         ImageView poster = findViewById(R.id.movie_detail_image);
         Picasso.get().load(movieDetails.getPosterImageUrl()).placeholder(R.drawable.default_poster).error(R.drawable.error_poster).into(poster);
@@ -180,7 +173,7 @@ public class DetailedMovieData extends AppCompatActivity
             {
                 @Override
                 public void run() {
-                    db.movieDataDao().deleteMovieData(itemToDelete);
+                    viewModel.getMovieDataBase().movieDataDao().deleteMovieData(itemToDelete);
                 }
             });
         }
@@ -206,7 +199,7 @@ public class DetailedMovieData extends AppCompatActivity
         {
             @Override
             public void run() {
-                db.movieDataDao().insertMovieData(movieDataEntry);
+                viewModel.getMovieDataBase().movieDataDao().insertMovieData(movieDataEntry);
             }
         });
 
