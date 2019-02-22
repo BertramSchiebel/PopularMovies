@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModel;
-import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModelFactory;
 import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
 import com.pinschaneer.bertram.popularmovies.data.MovieListAdapter;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
@@ -42,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
     private Spinner mMovieQuerySpinner;
-    private ProgressBar mLoadingPageIndicator;
     private AsyncTask<String, MovieDBPageResult, MovieDBPageResult> mFetchMovieDataTask;
 
     /**
@@ -82,8 +80,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         mMovieListRecyclerView = findViewById(R.id.rv_movie_list);
         GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
         mMovieListRecyclerView.setLayoutManager(layoutManager);
-        viewModel = ViewModelProviders.of(this, new MainViewModelFactory(this.getApplication(), this)).get(MainViewModel.class);
 
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.Init(this);
 
         mMovieListRecyclerView.setAdapter(viewModel.getMovieListAdapter());
 
@@ -103,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         if (!viewModel.hasData()) {
             mFetchMovieDataTask = new FetchMovieDataTask(this);
         }
-        mLoadingPageIndicator = findViewById(R.id.pb_display_page_count);
     }
 
 
@@ -196,9 +194,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         protected void onPreExecute() {
             super.onPreExecute();
             mMovieQuerySpinner.setEnabled(false);
-            mLoadingPageIndicator.setProgress(0);
             mLoadingIndicator.setVisibility(View.VISIBLE);
-            mLoadingPageIndicator.setVisibility(View.VISIBLE);
         }
 
 
@@ -214,9 +210,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             }
             int totalPages = 5;
             mCurrentPageLoading = 1;
-            mLoadingPageIndicator.setProgress(mCurrentPageLoading);
+            //mLoadingPageIndicator.setProgress(mCurrentPageLoading);
             MovieDBPageResult pageResult;
-            mLoadingPageIndicator.setMax(totalPages);
+            //mLoadingPageIndicator.setMax(totalPages);
 
             do {
                 URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0], Integer.toString(mCurrentPageLoading));
@@ -246,11 +242,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             if (values.length > 0) {
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
                 viewModel.getMovieListAdapter().setMovieData(values[0].getResults());
-                mLoadingPageIndicator.setProgress(mCurrentPageLoading);
                 showMovieResults();
             }
         }
-
 
         /**
          * Displays the summery of network request or an error message
@@ -262,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
             mMovieQuerySpinner.setEnabled(true);
             mLoadingIndicator.setVisibility(View.INVISIBLE);
-            mLoadingPageIndicator.setVisibility(View.INVISIBLE);
             if (viewModel.getMovieListAdapter().getItemCount() == 0) {
                 mErrorMessageDisplay.setText(R.string.error_message);
                 showErrorMessage();

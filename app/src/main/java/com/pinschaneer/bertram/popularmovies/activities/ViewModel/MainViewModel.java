@@ -11,6 +11,10 @@ public class MainViewModel extends AndroidViewModel
 
     private String command = "movie/popular";
 
+    public MainViewModel(Application application) {
+        super(application);
+    }
+
     public String getCommand() {
         return command;
     }
@@ -19,10 +23,10 @@ public class MainViewModel extends AndroidViewModel
         this.command = command;
     }
 
-    public MainViewModel(Application application,
-                         MovieListAdapter.MovieListAdapterOnClickHandler clickHandler) {
-        super(application);
-        movieListAdapter = new MovieListAdapter(clickHandler);
+    public void Init(MovieListAdapter.MovieListAdapterOnClickHandler clickHandler) {
+        if (movieListAdapter == null) {
+            movieListAdapter = new MovieListAdapter(clickHandler);
+        }
     }
 
     public MovieListAdapter getMovieListAdapter() {
