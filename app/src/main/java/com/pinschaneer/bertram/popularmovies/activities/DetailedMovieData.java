@@ -14,7 +14,6 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.pinschaneer.bertram.popularmovies.R;
-import com.pinschaneer.bertram.popularmovies.activities.ViewModel.DetailedMovieDataViewModel;
 import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;

@@ -19,7 +19,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.pinschaneer.bertram.popularmovies.R;
-import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModel;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieListAdapter;
 
