@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private void showErrorMessage() {
         mMovieListRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -52,6 +53,14 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private void showMovieResults() {
         mMovieListRecyclerView.setVisibility(View.VISIBLE);
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+    }
+
+    private void showLoadingIsActive() {
+        mMovieListRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -76,8 +85,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
         mMovieListRecyclerView.setLayoutManager(layoutManager);
 
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-
         movieListAdapter = new MovieListAdapter(this);
         mMovieListRecyclerView.setAdapter(movieListAdapter);
 
@@ -94,6 +101,12 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         movieQuerySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         mMovieQuerySpinner.setAdapter(movieQuerySpinnerAdapter);
 
+        setupViewModel();
+    }
+
+    private void setupViewModel() {
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
         viewModel.getMovieDataEntries().observe(this, new Observer<ArrayList<MovieDataEntry>>()
         {
             @Override
@@ -101,8 +114,38 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 movieListAdapter.setMovieData(movieDataEntries);
             }
         });
-    }
 
+        viewModel.getIsLoading().observe(this, new Observer<Boolean>()
+        {
+            @Override
+            public void onChanged(@Nullable Boolean isLoading) {
+                if (isLoading) {
+                    showLoadingIsActive();
+                }
+            }
+        });
+
+        viewModel.getHasData().observe(this, new Observer<Boolean>()
+        {
+            @Override
+            public void onChanged(@Nullable Boolean hasData) {
+                if (hasData) {
+                    showMovieResults();
+                }
+            }
+        });
+
+        viewModel.getHasLoadingError().observe(this, new Observer<Boolean>()
+        {
+            @Override
+            public void onChanged(@Nullable Boolean hasLoadingError) {
+                if (hasLoadingError) {
+                    showErrorMessage();
+                }
+            }
+        });
+
+    }
 
     /**
      * Event handler for the click on a movie poster

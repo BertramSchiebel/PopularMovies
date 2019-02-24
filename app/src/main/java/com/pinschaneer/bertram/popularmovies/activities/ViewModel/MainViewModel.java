@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 
 import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
-import com.pinschaneer.bertram.popularmovies.data.MovieListAdapter;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;
@@ -16,52 +15,51 @@ import java.util.ArrayList;
 
 public class MainViewModel extends AndroidViewModel
 {
-    //private MovieListAdapter movieListAdapter;
-
     private String command = "movie/popular";
 
     private MutableLiveData<ArrayList<MovieDataEntry>> movieDataEntries;
 
+
+    private MutableLiveData<Boolean> isLoading;
+    private MutableLiveData<Boolean> hasData;
+    private MutableLiveData<Boolean> hasLoadingError;
+
     public MainViewModel(Application application) {
         super(application);
         ArrayList<MovieDataEntry> movieList = new ArrayList<>();
-        movieDataEntries = new MutableLiveData();
+        movieDataEntries = new MutableLiveData<>();
         movieDataEntries.setValue(movieList);
+        isLoading = new MutableLiveData<>();
+        hasData = new MutableLiveData<>();
+        hasLoadingError = new MutableLiveData<>();
+
         loadMovieData();
+    }
+
+    public MutableLiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public MutableLiveData<Boolean> getHasData() {
+        return hasData;
+    }
+
+    public MutableLiveData<Boolean> getHasLoadingError() {
+        return hasLoadingError;
     }
 
     public MutableLiveData<ArrayList<MovieDataEntry>> getMovieDataEntries() {
         return movieDataEntries;
     }
 
-    public String getCommand() {
-        return command;
-    }
-
     public void setCommand(String command) {
         this.command = command;
     }
 
-    public void Init(MovieListAdapter.MovieListAdapterOnClickHandler clickHandler) {
-        //        if (movieListAdapter == null) {
-        //            movieListAdapter = new MovieListAdapter(clickHandler);
-        //        }
-
-
-    }
-
-
     public void loadMovieData() {
         movieDataEntries.getValue().clear();
         new FetchMovieData().execute(command);
-    }
-
-    //    public MovieListAdapter getMovieListAdapter() {
-    //        return movieListAdapter;
-    //    }
-
-    public boolean hasData() {
-        return (movieDataEntries.getValue().size() > 0);
+        isLoading.postValue(true);
     }
 
     private class FetchMovieData extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult>
@@ -84,6 +82,9 @@ public class MainViewModel extends AndroidViewModel
                 }
                 catch (IOException e) {
                     e.printStackTrace();
+                    if (!hasData.getValue()) {
+                        hasLoadingError.postValue(true);
+                    }
                     break;
                 }
             } while (currentPageLoading <= totalPages);
@@ -99,7 +100,24 @@ public class MainViewModel extends AndroidViewModel
                 ArrayList<MovieDataEntry> entries = movieDataEntries.getValue();
                 entries.addAll(values[0].getResults());
                 movieDataEntries.postValue(entries);
+                hasData.postValue(true);
             }
+        }
+
+        @Override
+        protected void onPostExecute(MovieDBPageResult movieDBPageResult) {
+            super.onPostExecute(movieDBPageResult);
+            isLoading.postValue(false);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            movieDataEntries.getValue().clear();
+            hasLoadingError.postValue(false);
+            hasData.postValue(false);
+            isLoading.postValue(true);
+
         }
     }
 
