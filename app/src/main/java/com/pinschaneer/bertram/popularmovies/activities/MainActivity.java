@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModel;
 import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
+import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieListAdapter;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
      * @param movieData the data of the clicked movie poster
      */
     @Override
-    public void onClick(MovieDBPageResult.ResultData movieData) {
+    public void onClick(MovieDataEntry movieData) {
         Context context = this;
         Intent startDetailedMovieActivity = new Intent(context, DetailedMovieData.class);
         startDetailedMovieActivity.putExtra(Intent.EXTRA_TEXT, Integer.toString(movieData.getId()));
@@ -218,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0], Integer.toString(mCurrentPageLoading));
                 try {
                     String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
-                    pageResult = MovieDBPageResult.createMovieDBPageResult(response);
+                    pageResult = MovieDBPageResult.parseMovieDbPageResult(response);
                     publishProgress(pageResult);
                     mCurrentPageLoading++;
                 } catch (IOException e) {

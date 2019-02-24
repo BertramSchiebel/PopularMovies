@@ -20,7 +20,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
 {
 
     private final MovieListAdapterOnClickHandler mCLickHandler;
-    private ArrayList<MovieDBPageResult.ResultData> mMovieDataList;
+    private ArrayList<MovieDataEntry> mMovieDataList;
 
 
     /**
@@ -57,7 +57,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
      */
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
-        MovieDBPageResult.ResultData data = mMovieDataList.get(position);
+        MovieDataEntry data = mMovieDataList.get(position);
         Picasso.get()
                 .load(data.getPosterImageUrl())
                 .placeholder(R.drawable.default_poster)
@@ -81,7 +81,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
      * Sets the data in the list of the adapter
      * @param data the new data
      */
-    public void setMovieData(ArrayList<MovieDBPageResult.ResultData> data) {
+    public void setMovieData(ArrayList<MovieDataEntry> data) {
         if (mMovieDataList == null) {
             mMovieDataList = data;
         } else {
@@ -106,7 +106,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
      * The interface that receives onClick messages.
      */
     public interface MovieListAdapterOnClickHandler {
-        void onClick(MovieDBPageResult.ResultData movieData);
+        void onClick(MovieDataEntry movieData);
     }
 
 
@@ -134,7 +134,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
-            MovieDBPageResult.ResultData data = mMovieDataList.get(position);
+            MovieDataEntry data = mMovieDataList.get(position);
             mCLickHandler.onClick(data);
         }
     }
