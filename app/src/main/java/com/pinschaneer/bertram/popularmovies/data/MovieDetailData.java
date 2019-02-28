@@ -91,7 +91,7 @@ public class MovieDetailData {
         this.mReleaseDate = releaseDate;
     }
 
-
+    public String getPosterPath(){return mPosterPath;}
     /**
      * Sets the path to image of the movie poster
      *

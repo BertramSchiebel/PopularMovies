@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import com.pinschaneer.bertram.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter for the recycler view
@@ -20,7 +20,12 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
 {
 
     private final MovieListAdapterOnClickHandler mCLickHandler;
-    private ArrayList<MovieDataEntry> mMovieDataList;
+
+    public void setMovieDataList(List<MovieDataEntry> mMovieDataList) {
+        this.mMovieDataList = mMovieDataList;
+    }
+
+    private List<MovieDataEntry> mMovieDataList;
 
 
     /**
@@ -77,30 +82,30 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     }
 
 
-    /**
-     * Sets the data in the list of the adapter
-     * @param data the new data
-     */
-    public void setMovieData(ArrayList<MovieDataEntry> data) {
-        if (mMovieDataList == null) {
-            mMovieDataList = data;
-        } else {
-            mMovieDataList.addAll(data);
-        }
-        notifyDataSetChanged();
-    }
+//    /**
+//     * Sets the data in the list of the adapter
+//     * @param data the new data
+//     */
+//    public void addMovieData(List<MovieDataEntry> data) {
+//        if (mMovieDataList == null) {
+//            mMovieDataList = data;
+//        } else {
+//            mMovieDataList.addAll(data);
+//        }
+//        notifyDataSetChanged();
+//    }
 
 
-    /**
-     *   clear the list of the adapter
-     */
-    public void clearMovieData() {
-        if (mMovieDataList == null) {
-            return;
-        }
-        mMovieDataList.clear();
-        notifyDataSetChanged();
-    }
+//    /**
+//     *   clear the list of the adapter
+//     */
+//    public void clearMovieData() {
+//        if (mMovieDataList == null) {
+//            return;
+//        }
+//        mMovieDataList.clear();
+//        notifyDataSetChanged();
+//    }
 
     /**
      * The interface that receives onClick messages.

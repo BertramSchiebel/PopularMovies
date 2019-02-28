@@ -1,10 +1,14 @@
 package com.pinschaneer.bertram.popularmovies.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
+import com.pinschaneer.bertram.popularmovies.R;
+import com.pinschaneer.bertram.popularmovies.data.FavoriteMovieDataBase;
 import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
@@ -12,27 +16,36 @@ import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainViewModel extends AndroidViewModel
+class MainViewModel extends AndroidViewModel
 {
     private String command = "movie/popular";
 
-    private MutableLiveData<ArrayList<MovieDataEntry>> movieDataEntries;
+    private final MutableLiveData<ArrayList<MovieDataEntry>> webMovieDataEntries;
+
+    public LiveData<List<MovieDataEntry>> getLocalMovieDataEntries() {
+        return localMovieDataEntries;
+    }
+
+    private final LiveData<List<MovieDataEntry>> localMovieDataEntries;
 
 
-    private MutableLiveData<Boolean> isLoading;
-    private MutableLiveData<Boolean> hasData;
-    private MutableLiveData<Boolean> hasLoadingError;
+    private final MutableLiveData<Boolean> isLoading;
+    private final MutableLiveData<Boolean> hasData;
+    private final MutableLiveData<Boolean> hasLoadingError;
 
     public MainViewModel(Application application) {
         super(application);
         ArrayList<MovieDataEntry> movieList = new ArrayList<>();
-        movieDataEntries = new MutableLiveData<>();
-        movieDataEntries.setValue(movieList);
+        webMovieDataEntries = new MutableLiveData<>();
+        webMovieDataEntries.setValue(movieList);
         isLoading = new MutableLiveData<>();
         hasData = new MutableLiveData<>();
         hasLoadingError = new MutableLiveData<>();
+        FavoriteMovieDataBase movieDataBase = FavoriteMovieDataBase.getInstance(application.getApplicationContext());
 
+        localMovieDataEntries = movieDataBase.movieDataDao().getLiveDataAllMovieData();
         loadMovieData();
     }
 
@@ -48,8 +61,8 @@ public class MainViewModel extends AndroidViewModel
         return hasLoadingError;
     }
 
-    public MutableLiveData<ArrayList<MovieDataEntry>> getMovieDataEntries() {
-        return movieDataEntries;
+    public MutableLiveData<ArrayList<MovieDataEntry>> getWebMovieDataEntries() {
+        return webMovieDataEntries;
     }
 
     public void setCommand(String command) {
@@ -57,11 +70,20 @@ public class MainViewModel extends AndroidViewModel
     }
 
     public void loadMovieData() {
-        movieDataEntries.getValue().clear();
-        new FetchMovieData().execute(command);
-        isLoading.postValue(true);
+        if (!isCommandLocalDbCommand()) {
+            webMovieDataEntries.getValue().clear();
+            new FetchMovieData().execute(command);
+            isLoading.postValue(true);
+        }
+
     }
 
+    public boolean isCommandLocalDbCommand() {
+        String localDbCommand = getApplication().getResources().getString(R.string.local_database_command);
+        return command.equals(localDbCommand);
+    }
+
+    @SuppressLint("StaticFieldLeak")
     private class FetchMovieData extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult>
     {
         @Override
@@ -97,9 +119,9 @@ public class MainViewModel extends AndroidViewModel
             super.onProgressUpdate(values);
 
             if (values.length > 0) {
-                ArrayList<MovieDataEntry> entries = movieDataEntries.getValue();
+                ArrayList<MovieDataEntry> entries = webMovieDataEntries.getValue();
                 entries.addAll(values[0].getResults());
-                movieDataEntries.postValue(entries);
+                webMovieDataEntries.postValue(entries);
                 hasData.postValue(true);
             }
         }
@@ -113,7 +135,7 @@ public class MainViewModel extends AndroidViewModel
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            movieDataEntries.getValue().clear();
+            webMovieDataEntries.getValue().clear();
             hasLoadingError.postValue(false);
             hasData.postValue(false);
             isLoading.postValue(true);

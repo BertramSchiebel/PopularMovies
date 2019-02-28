@@ -23,6 +23,7 @@ import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieListAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -35,7 +36,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private MainViewModel viewModel;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
-    private Spinner mMovieQuerySpinner;
+
+    private List<MovieDataEntry> favoriteMovies;
+    private List<MovieDataEntry> webMovieData;
 
     /**
      * Display a error message
@@ -91,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
-        mMovieQuerySpinner = findViewById(R.id.sp_switch_move_query);
+        Spinner mMovieQuerySpinner = findViewById(R.id.sp_switch_move_query);
         Resources res = getResources();
         String[] mPossibleMovieSelections = res.getStringArray(R.array.movie_list_queries);
         mMovieQuerySpinner.setOnItemSelectedListener(this);
@@ -106,18 +109,33 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private void setupViewModel() {
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        viewModel.getMovieDataEntries().observe(this, new Observer<ArrayList<MovieDataEntry>>()
+        viewModel.getWebMovieDataEntries().observe(this, new Observer<ArrayList<MovieDataEntry>>()
         {
             @Override
             public void onChanged(@Nullable ArrayList<MovieDataEntry> movieDataEntries) {
-                movieListAdapter.setMovieData(movieDataEntries);
+               {
+                    webMovieData = movieDataEntries;
+                    movieListAdapter.notifyDataSetChanged();
+               }
             }
         });
 
-        viewModel.getIsLoading().observe(this, new Observer<Boolean>()
+        viewModel.getLocalMovieDataEntries().observe(this, new Observer<List<MovieDataEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<MovieDataEntry> movieDataEntries) {
+                favoriteMovies = movieDataEntries;
+                if (viewModel.isCommandLocalDbCommand()) {
+                    movieListAdapter.setMovieDataList(favoriteMovies);
+                    movieListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+         viewModel.getIsLoading().observe(this, new Observer<Boolean>()
         {
             @Override
             public void onChanged(@Nullable Boolean isLoading) {
+                //noinspection ConstantConditions
                 if (isLoading) {
                     showLoadingIsActive();
                 }
@@ -128,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         {
             @Override
             public void onChanged(@Nullable Boolean hasData) {
+                //noinspection ConstantConditions
                 if (hasData) {
                     showMovieResults();
                 }
@@ -138,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         {
             @Override
             public void onChanged(@Nullable Boolean hasLoadingError) {
+                //noinspection ConstantConditions
                 if (hasLoadingError) {
                     showErrorMessage();
                 }
@@ -145,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         });
 
     }
+
 
     /**
      * Event handler for the click on a movie poster
@@ -178,12 +199,23 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             case 1:
                 viewModel.setCommand(getString(R.string.top_rated_command));
                 break;
-
+            case 2:
+                viewModel.setCommand(getString(R.string.local_database_command));
+                break;
             default:
                 viewModel.setCommand(getString(R.string.most_popular_command));
         }
 
-        viewModel.loadMovieData();
+        if (viewModel.isCommandLocalDbCommand()){
+            movieListAdapter.setMovieDataList(favoriteMovies);
+            movieListAdapter.notifyDataSetChanged();
+        }
+        else{
+            movieListAdapter.setMovieDataList(webMovieData);
+            movieListAdapter.notifyDataSetChanged();
+            viewModel.loadMovieData();
+        }
+
     }
 
     /**

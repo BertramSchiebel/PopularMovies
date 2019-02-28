@@ -15,12 +15,14 @@ public interface MovieDataDao
     @Query("SELECT * FROM movie")
     List<MovieDataEntry> getAllMovieData();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Query("SELECT * FROM movie")
+    LiveData<List<MovieDataEntry>> getLiveDataAllMovieData();
+
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertMovieData(MovieDataEntry movieDataEntry);
 
     @Delete
     void deleteMovieData(MovieDataEntry movieDataEntry);
 
-    @Query("SELECT * FROM movie WHERE id = :movieId")
-    LiveData<MovieDataEntry> getMovieDataById(String movieId);
 }

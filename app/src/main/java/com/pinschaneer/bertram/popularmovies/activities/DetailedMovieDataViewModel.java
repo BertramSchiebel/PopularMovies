@@ -1,5 +1,6 @@
 package com.pinschaneer.bertram.popularmovies.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
@@ -15,7 +16,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class DetailedMovieDataViewModel extends AndroidViewModel
+@SuppressWarnings("ALL")
+class DetailedMovieDataViewModel extends AndroidViewModel
 {
     private int movieId;
     private boolean isLoadingActive;
@@ -24,7 +26,7 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
 
     private List<MovieDataEntry> favoriteMovies;
 
-    private FavoriteMovieDataBase movieDataBase;
+    private final FavoriteMovieDataBase movieDataBase;
 
     public DetailedMovieDataViewModel(Application application) {
 
@@ -85,9 +87,10 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
         }
         MovieDetailData data = movieData.getValue();
         assert data != null;
-        return new MovieDataEntry(movieId, data.getTitle(), data.getPosterImageUrl(), data.getDescription(), data.getAverageVote(), data.getReleaseDate());
+        return new MovieDataEntry(movieId, data.getTitle(), data.getPosterPath(), data.getDescription(), data.getAverageVote(), data.getReleaseDate());
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class FetchMovieDetailData extends AsyncTask<String, Void, String>
     {
 

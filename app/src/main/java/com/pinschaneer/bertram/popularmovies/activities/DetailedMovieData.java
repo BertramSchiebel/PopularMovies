@@ -42,7 +42,6 @@ public class DetailedMovieData extends AppCompatActivity
         if (startActivityIntent != null) {
             if (startActivityIntent.hasExtra(Intent.EXTRA_TEXT)) {
                 mDetailedMovieId = Integer.parseInt(startActivityIntent.getStringExtra(Intent.EXTRA_TEXT));
-                //mDetailedMovieId = startActivityIntent.getStringExtra(Intent.EXTRA_TEXT);
             }
         }
 
