@@ -14,7 +14,6 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.pinschaneer.bertram.popularmovies.R;
-import com.pinschaneer.bertram.popularmovies.activities.ViewModel.DetailedMovieDataViewModel;
 import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
@@ -29,7 +28,7 @@ import java.util.Locale;
 public class DetailedMovieData extends AppCompatActivity
 {
 
-    private String mDetailedMovieId;
+    private int mDetailedMovieId;
     private DetailedMovieDataViewModel viewModel;
 
     @Override
@@ -42,7 +41,7 @@ public class DetailedMovieData extends AppCompatActivity
 
         if (startActivityIntent != null) {
             if (startActivityIntent.hasExtra(Intent.EXTRA_TEXT)) {
-                mDetailedMovieId = startActivityIntent.getStringExtra(Intent.EXTRA_TEXT);
+                mDetailedMovieId = Integer.parseInt(startActivityIntent.getStringExtra(Intent.EXTRA_TEXT));
             }
         }
 
@@ -180,10 +179,10 @@ public class DetailedMovieData extends AppCompatActivity
 
     }
 
-    private MovieDataEntry getFavoriteMovie(String mDetailedMovieId) {
+    private MovieDataEntry getFavoriteMovie(int mDetailedMovieId) {
         MovieDataEntry movieDataEntry = null;
         for (MovieDataEntry movie : viewModel.getFavoriteMovies()) {
-            if (movie.getId().equals(mDetailedMovieId)) {
+            if (movie.getId() == mDetailedMovieId) {
                 movieDataEntry = movie;
                 break;
             }
@@ -205,9 +204,9 @@ public class DetailedMovieData extends AppCompatActivity
 
     }
 
-    private boolean isMarkedAsFavorite(String movieId) {
+    private boolean isMarkedAsFavorite(int movieId) {
         for (MovieDataEntry movie : viewModel.getFavoriteMovies()) {
-            if (movieId.equals(movie.getId())) {
+            if (movieId == movie.getId()) {
                 return true;
             }
         }

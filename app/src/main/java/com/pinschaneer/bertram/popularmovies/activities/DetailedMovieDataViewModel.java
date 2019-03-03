@@ -1,5 +1,6 @@
-package com.pinschaneer.bertram.popularmovies.activities.ViewModel;
+package com.pinschaneer.bertram.popularmovies.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
@@ -15,21 +16,22 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class DetailedMovieDataViewModel extends AndroidViewModel
+@SuppressWarnings("ALL")
+class DetailedMovieDataViewModel extends AndroidViewModel
 {
-    private String movieId;
+    private int movieId;
     private boolean isLoadingActive;
     private boolean isLoadingSuccessfull;
     private MutableLiveData<MovieDetailData> movieData;
 
     private List<MovieDataEntry> favoriteMovies;
 
-    private FavoriteMovieDataBase movieDataBase;
+    private final FavoriteMovieDataBase movieDataBase;
 
     public DetailedMovieDataViewModel(Application application) {
 
         super(application);
-        movieId = "";
+        movieId = -1;
         movieDataBase = FavoriteMovieDataBase.getInstance(application.getApplicationContext());
     }
 
@@ -54,10 +56,10 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
     }
 
     public boolean hasData() {
-        return !movieId.isEmpty() && isLoadingSuccessfull;
+        return movieId < 0 && isLoadingSuccessfull;
     }
 
-    public void init(String movieId) {
+    public void init(int movieId) {
         this.movieId = movieId;
         loadMovieDetails();
         movieData = new MutableLiveData<>();
@@ -84,9 +86,11 @@ public class DetailedMovieDataViewModel extends AndroidViewModel
             return null;
         }
         MovieDetailData data = movieData.getValue();
-        return new MovieDataEntry(movieId, data.getTitle(), data.getPosterImageUrl(), data.getDescription(), data.getAverageVote(), data.getReleaseDate());
+        assert data != null;
+        return new MovieDataEntry(movieId, data.getTitle(), data.getPosterPath(), data.getDescription(), data.getAverageVote(), data.getReleaseDate());
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class FetchMovieDetailData extends AsyncTask<String, Void, String>
     {
 
