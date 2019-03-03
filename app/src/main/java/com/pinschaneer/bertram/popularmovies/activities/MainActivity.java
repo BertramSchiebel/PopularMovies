@@ -1,13 +1,13 @@
 package com.pinschaneer.bertram.popularmovies.activities;
 
-import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,18 +17,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.pinschaneer.bertram.popularmovies.R;
-import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModel;
-import com.pinschaneer.bertram.popularmovies.activities.ViewModel.MainViewModelFactory;
-import com.pinschaneer.bertram.popularmovies.data.MovieDBPageResult;
+import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieListAdapter;
-import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -37,13 +32,13 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieListAdapterOnClickHandler, AdapterView.OnItemSelectedListener {
 
     private RecyclerView mMovieListRecyclerView;
-
+    private MovieListAdapter movieListAdapter;
     private MainViewModel viewModel;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
-    private Spinner mMovieQuerySpinner;
-    private ProgressBar mLoadingPageIndicator;
-    private AsyncTask<String, MovieDBPageResult, MovieDBPageResult> mFetchMovieDataTask;
+
+    private List<MovieDataEntry> favoriteMovies;
+    private List<MovieDataEntry> webMovieData;
 
     /**
      * Display a error message
@@ -51,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private void showErrorMessage() {
         mMovieListRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -59,6 +55,14 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     private void showMovieResults() {
         mMovieListRecyclerView.setVisibility(View.VISIBLE);
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+    }
+
+    private void showLoadingIsActive() {
+        mMovieListRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -82,16 +86,15 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         mMovieListRecyclerView = findViewById(R.id.rv_movie_list);
         GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
         mMovieListRecyclerView.setLayoutManager(layoutManager);
-        viewModel = ViewModelProviders.of(this, new MainViewModelFactory(this.getApplication(), this)).get(MainViewModel.class);
 
-
-        mMovieListRecyclerView.setAdapter(viewModel.getMovieListAdapter());
+        movieListAdapter = new MovieListAdapter(this);
+        mMovieListRecyclerView.setAdapter(movieListAdapter);
 
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
 
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
-        mMovieQuerySpinner = findViewById(R.id.sp_switch_move_query);
+        Spinner mMovieQuerySpinner = findViewById(R.id.sp_switch_move_query);
         Resources res = getResources();
         String[] mPossibleMovieSelections = res.getStringArray(R.array.movie_list_queries);
         mMovieQuerySpinner.setOnItemSelectedListener(this);
@@ -100,24 +103,67 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         movieQuerySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         mMovieQuerySpinner.setAdapter(movieQuerySpinnerAdapter);
 
-        if (!viewModel.hasData()) {
-            mFetchMovieDataTask = new FetchMovieDataTask(this);
-        }
-        mLoadingPageIndicator = findViewById(R.id.pb_display_page_count);
+        setupViewModel();
     }
 
+    private void setupViewModel() {
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-    /**
-     * Load the movie data in an async task
-     */
-    private void loadMovieData() {
-        if (null != mFetchMovieDataTask) {
-            AsyncTask.Status status = mFetchMovieDataTask.getStatus();
-            if (status != AsyncTask.Status.RUNNING) {
-                viewModel.getMovieListAdapter().clearMovieData();
-                mFetchMovieDataTask = new FetchMovieDataTask(this).execute(viewModel.getCommand());
+        viewModel.getWebMovieDataEntries().observe(this, new Observer<ArrayList<MovieDataEntry>>()
+        {
+            @Override
+            public void onChanged(@Nullable ArrayList<MovieDataEntry> movieDataEntries) {
+               {
+                    webMovieData = movieDataEntries;
+                    movieListAdapter.notifyDataSetChanged();
+               }
             }
-        }
+        });
+
+        viewModel.getLocalMovieDataEntries().observe(this, new Observer<List<MovieDataEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<MovieDataEntry> movieDataEntries) {
+                favoriteMovies = movieDataEntries;
+                if (viewModel.isCommandLocalDbCommand()) {
+                    movieListAdapter.setMovieDataList(favoriteMovies);
+                    movieListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+         viewModel.getIsLoading().observe(this, new Observer<Boolean>()
+        {
+            @Override
+            public void onChanged(@Nullable Boolean isLoading) {
+                //noinspection ConstantConditions
+                if (isLoading) {
+                    showLoadingIsActive();
+                }
+            }
+        });
+
+        viewModel.getHasData().observe(this, new Observer<Boolean>()
+        {
+            @Override
+            public void onChanged(@Nullable Boolean hasData) {
+                //noinspection ConstantConditions
+                if (hasData) {
+                    showMovieResults();
+                }
+            }
+        });
+
+        viewModel.getHasLoadingError().observe(this, new Observer<Boolean>()
+        {
+            @Override
+            public void onChanged(@Nullable Boolean hasLoadingError) {
+                //noinspection ConstantConditions
+                if (hasLoadingError) {
+                    showErrorMessage();
+                }
+            }
+        });
+
     }
 
 
@@ -128,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
      * @param movieData the data of the clicked movie poster
      */
     @Override
-    public void onClick(MovieDBPageResult.ResultData movieData) {
+    public void onClick(MovieDataEntry movieData) {
         Context context = this;
         Intent startDetailedMovieActivity = new Intent(context, DetailedMovieData.class);
         startDetailedMovieActivity.putExtra(Intent.EXTRA_TEXT, Integer.toString(movieData.getId()));
@@ -153,12 +199,23 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             case 1:
                 viewModel.setCommand(getString(R.string.top_rated_command));
                 break;
-
+            case 2:
+                viewModel.setCommand(getString(R.string.local_database_command));
+                break;
             default:
                 viewModel.setCommand(getString(R.string.most_popular_command));
         }
 
-        loadMovieData();
+        if (viewModel.isCommandLocalDbCommand()){
+            movieListAdapter.setMovieDataList(favoriteMovies);
+            movieListAdapter.notifyDataSetChanged();
+        }
+        else{
+            movieListAdapter.setMovieDataList(webMovieData);
+            movieListAdapter.notifyDataSetChanged();
+            viewModel.loadMovieData();
+        }
+
     }
 
     /**
@@ -170,109 +227,4 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         //auto generated stub
     }
 
-
-    /**
-     * Async task to get the requested movie data from the network
-     */
-    @SuppressLint("StaticFieldLeak")
-    private class FetchMovieDataTask extends AsyncTask<String, MovieDBPageResult, MovieDBPageResult> {
-
-        private final Context mContext;
-        private int mCurrentPageLoading;
-
-
-        /**
-         * constructor
-         * @param context the context of the task
-         */
-        private FetchMovieDataTask(Context context) {
-            this.mContext = context;
-        }
-
-        /**
-         * Adjustment before the execution
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mMovieQuerySpinner.setEnabled(false);
-            mLoadingPageIndicator.setProgress(0);
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-            mLoadingPageIndicator.setVisibility(View.VISIBLE);
-        }
-
-
-        /**
-         * The task that is done asynchronously
-         * @param searchParams thr parameter for the network request
-         * @return null
-         */
-        @Override
-        protected MovieDBPageResult doInBackground(String... searchParams) {
-            if (searchParams.length == 0) {
-                return null;
-            }
-            int totalPages = 5;
-            mCurrentPageLoading = 1;
-            mLoadingPageIndicator.setProgress(mCurrentPageLoading);
-            MovieDBPageResult pageResult;
-            mLoadingPageIndicator.setMax(totalPages);
-
-            do {
-                URL movieDbUrl = NetworkUtils.buildUrl(searchParams[0], Integer.toString(mCurrentPageLoading));
-                try {
-                    String response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
-                    pageResult = MovieDBPageResult.createMovieDBPageResult(response);
-                    publishProgress(pageResult);
-                    mCurrentPageLoading++;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    break;
-                }
-            } while (mCurrentPageLoading <= totalPages);
-
-            return null;
-        }
-
-
-        /**
-         * Displays the progress of the async task
-         * @param values the data of the search progres
-         */
-        @Override
-        protected void onProgressUpdate(MovieDBPageResult... values) {
-            super.onProgressUpdate(values);
-
-            if (values.length > 0) {
-                mLoadingIndicator.setVisibility(View.INVISIBLE);
-                viewModel.getMovieListAdapter().setMovieData(values[0].getResults());
-                mLoadingPageIndicator.setProgress(mCurrentPageLoading);
-                showMovieResults();
-            }
-        }
-
-
-        /**
-         * Displays the summery of network request or an error message
-         * @param movieDBPageResult always null
-         */
-        @Override
-        protected void onPostExecute(MovieDBPageResult movieDBPageResult) {
-            super.onPostExecute(movieDBPageResult);
-
-            mMovieQuerySpinner.setEnabled(true);
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            mLoadingPageIndicator.setVisibility(View.INVISIBLE);
-            if (viewModel.getMovieListAdapter().getItemCount() == 0) {
-                mErrorMessageDisplay.setText(R.string.error_message);
-                showErrorMessage();
-            } else {
-
-                String msg = String.format(Locale.getDefault(), getString(R.string.message_loaded_data_set), viewModel.getMovieListAdapter().getItemCount());
-                Toast.makeText(mContext, msg, Toast.LENGTH_LONG)
-                        .show();
-
-            }
-        }
-    }
 }

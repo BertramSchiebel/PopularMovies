@@ -1,32 +1,35 @@
 package com.pinschaneer.bertram.popularmovies.activities;
 
-import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.pinschaneer.bertram.popularmovies.R;
+import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
+import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
-import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.util.Locale;
 
 /**
- * This class is responsible for the detaild view of movie
+ * This class is responsible for the detailed view of movie
  */
-public class DetailedMovieData extends AppCompatActivity {
+public class DetailedMovieData extends AppCompatActivity
+{
 
-    private String mDetailedMovieId;
+    private int mDetailedMovieId;
+    private DetailedMovieDataViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,21 +41,25 @@ public class DetailedMovieData extends AppCompatActivity {
 
         if (startActivityIntent != null) {
             if (startActivityIntent.hasExtra(Intent.EXTRA_TEXT)) {
-                mDetailedMovieId = startActivityIntent.getStringExtra(Intent.EXTRA_TEXT);
+                mDetailedMovieId = Integer.parseInt(startActivityIntent.getStringExtra(Intent.EXTRA_TEXT));
             }
         }
 
-        loadMovieDetails();
+        viewModel = ViewModelProviders.of(this).get(DetailedMovieDataViewModel.class);
+        if (!viewModel.hasData()) {
+            viewModel.init(mDetailedMovieId);
+        }
+
+        viewModel.getMovieData().observe(this, new Observer<MovieDetailData>()
+        {
+            @Override
+            public void onChanged(@Nullable MovieDetailData movieDetails) {
+                DetailedMovieData.this.populateDisplayInformation(movieDetails);
+            }
+        });
+
     }
 
-    /**
-     * load the details of a movie by a network request
-     */
-    private void loadMovieDetails() {
-        String command = "movie/" + mDetailedMovieId;
-        new FetchMovieDetailData().execute(command);
-
-    }
 
     /**
      * Set the visibility of the views in this activity
@@ -95,6 +102,20 @@ public class DetailedMovieData extends AppCompatActivity {
      * @param movieDetails the given detailed data of the movie
      */
     private void populateDisplayInformation(MovieDetailData movieDetails) {
+        displayLoadingIsActive(viewModel.isLoadingActive());
+        if (viewModel.isLoadingActive()) {
+            return;
+        }
+
+        if (!viewModel.isLoadingSuccessfull()) {
+            showErrorMessage();
+            return;
+        }
+        if (isMarkedAsFavorite(mDetailedMovieId)) {
+            ToggleButton markFavorite = findViewById(R.id.toggleButtonMarkAsFavorite);
+            markFavorite.setChecked(true);
+        }
+
         TextView displayTitle = findViewById(R.id.tv_movie_detail_title);
         displayTitle.setText(movieDetails.getTitle());
 
@@ -102,25 +123,17 @@ public class DetailedMovieData extends AppCompatActivity {
         displayDescription.setText(movieDetails.getDescription());
 
         TextView displayRating = findViewById(R.id.movie_detail_rating);
-        String rating = String.format(Locale.getDefault(), "%.1f/10", movieDetails.getAverageVote());
 
-        String ratingText = rating;
-        displayRating.setText(ratingText);
+        displayRating.setText(String.format(Locale.getDefault(), "%.1f/10", movieDetails.getAverageVote()));
 
         TextView displayReleaseDate = findViewById(R.id.movie_detail_release_date);
         Locale current = getResources().getConfiguration().locale;
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, current);
-        String releaseDate = dateFormat.format(movieDetails.getReleaseDate());
 
-        String releaseDateText = releaseDate;
-        displayReleaseDate.setText(releaseDateText);
+        displayReleaseDate.setText(dateFormat.format(movieDetails.getReleaseDate()));
 
         ImageView poster = findViewById(R.id.movie_detail_image);
-        Picasso.get()
-                .load(movieDetails.getPosterImageUrl())
-                .placeholder(R.drawable.default_poster)
-                .error(R.drawable.error_poster)
-                .into(poster);
+        Picasso.get().load(movieDetails.getPosterImageUrl()).placeholder(R.drawable.default_poster).error(R.drawable.error_poster).into(poster);
     }
 
 
@@ -137,59 +150,68 @@ public class DetailedMovieData extends AppCompatActivity {
         errorMessage.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * The Async task to get the movie details from the network
-     */
-    @SuppressLint("StaticFieldLeak")
-    class FetchMovieDetailData extends AsyncTask<String, Void, String> {
+    public void favoriteClicked(View view) {
+        ToggleButton tb = (ToggleButton) view;
+        if (tb != null) {
+            if (tb.isChecked()) {
 
-        /**
-         * Settings before executing the async task
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            displayLoadingIsActive(true);
-        }
-
-        /**
-         * runs an async task to get data from the internet
-         *
-         * @param params the parameter to build the URL for the network request
-         * @return A JSON string of the network request or null if the request fails
-         */
-        @Override
-        protected String doInBackground(String... params) {
-            if (params.length == 0) {
-                return null;
+                // mark this movie as favorite
+                markAsFavorite();
             }
-            String response;
-            URL movieDbUrl = NetworkUtils.buildUrl(params[0], "1");
-            try {
-                response = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-            return response;
-        }
-
-        /**
-         * after the task is finished the received data will be processed
-         * @param response the received data from the network request
-         */
-        @Override
-        protected void onPostExecute(String response) {
-            super.onPostExecute(response);
-            if (response != null) {
-                MovieDetailData movieDetails = MovieDetailData.crateMovieDetailData(response);
-                if (movieDetails != null) {
-                    displayLoadingIsActive(false);
-                    populateDisplayInformation(movieDetails);
-                }
-            } else {
-                showErrorMessage();
+            else {
+                deleteAsFavorite();
             }
         }
     }
+
+    private void deleteAsFavorite() {
+        final MovieDataEntry itemToDelete = getFavoriteMovie(mDetailedMovieId);
+        if (!(itemToDelete == null)) {
+            viewModel.getFavoriteMovies().remove(itemToDelete);
+            DataBaseExecutor.getInstance().diskIO().execute(new Runnable()
+            {
+                @Override
+                public void run() {
+                    viewModel.getMovieDataBase().movieDataDao().deleteMovieData(itemToDelete);
+                }
+            });
+        }
+
+    }
+
+    private MovieDataEntry getFavoriteMovie(int mDetailedMovieId) {
+        MovieDataEntry movieDataEntry = null;
+        for (MovieDataEntry movie : viewModel.getFavoriteMovies()) {
+            if (movie.getId() == mDetailedMovieId) {
+                movieDataEntry = movie;
+                break;
+            }
+        }
+        return movieDataEntry;
+    }
+
+    private void markAsFavorite() {
+
+        final MovieDataEntry movieDataEntry = viewModel.getMovieDataEntry();
+
+        DataBaseExecutor.getInstance().diskIO().execute(new Runnable()
+        {
+            @Override
+            public void run() {
+                viewModel.getMovieDataBase().movieDataDao().insertMovieData(movieDataEntry);
+            }
+        });
+
+    }
+
+    private boolean isMarkedAsFavorite(int movieId) {
+        for (MovieDataEntry movie : viewModel.getFavoriteMovies()) {
+            if (movieId == movie.getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

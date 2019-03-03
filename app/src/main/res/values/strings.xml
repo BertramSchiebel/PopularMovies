@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="PluralsCandidate">
     <string name="app_name">Popular Movies</string>
     <string name="error_message">An error has occurred. Please try again later</string>
     <string name="detailed_movie_title">Movie Details</string>
@@ -7,12 +7,17 @@
     <string name="rating">Rating: </string>
     <string name="overview">overview</string>
     <string name="movie_poster_image">Movie Poster Image</string>
-    <string name="message_loaded_data_set">Download finished, received : %d data sets</string>
-    <string name="most_popular_command">movie/popular</string>
-    <string name="top_rated_command">movie/top_rated</string>
+    <string name="message_loaded_data_set">Download finished, received : %d sets of movie data</string>
+    <string name="most_popular_command" translatable="false">movie/popular</string>
+    <string name="top_rated_command" translatable="false">movie/top_rated</string>
+    <string name="local_database_command" translatable="false">localDatabase</string>
     <string name="description_label">Description</string>
+    <string name="tb_mark_as_favorite_text">Mark as Favorite</string>
+    <string name="tb_mark_as_favorite_off_text">Mark as Favorite</string>
+    <string name="tb_mark_as_favorite_on_text">Is marked as Favorite</string>
     <string-array name="movie_list_queries">
         <item>most popular</item>
         <item>highest rated</item>
+        <item>marked as favorite</item>
     </string-array>
 </resources>
