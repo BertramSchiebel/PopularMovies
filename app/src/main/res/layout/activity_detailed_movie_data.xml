@@ -5,7 +5,7 @@
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
              android:orientation="vertical"
-             tools:context=".activities.DetailedMovieData">
+             tools:context=".activities.DetailedMovieDataActivity">
 
     <ProgressBar
         android:id="@+id/detail_loading_indicator"

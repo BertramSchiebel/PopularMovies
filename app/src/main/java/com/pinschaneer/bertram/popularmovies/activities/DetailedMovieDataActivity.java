@@ -17,15 +17,17 @@ import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
+import com.pinschaneer.bertram.popularmovies.data.MovieVideoDataEntry;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
  * This class is responsible for the detailed view of movie
  */
-public class DetailedMovieData extends AppCompatActivity
+public class DetailedMovieDataActivity extends AppCompatActivity
 {
 
     private int mDetailedMovieId;
@@ -54,9 +56,19 @@ public class DetailedMovieData extends AppCompatActivity
         {
             @Override
             public void onChanged(@Nullable MovieDetailData movieDetails) {
-                DetailedMovieData.this.populateDisplayInformation(movieDetails);
+                DetailedMovieDataActivity.this.populateDisplayInformation(movieDetails);
+                movieDetails.getVideos().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<MovieVideoDataEntry>>() {
+                    @Override
+                    public void onChanged(
+                            @Nullable ArrayList<MovieVideoDataEntry> movieVideoDataEntries) {
+                        int count = movieVideoDataEntries.size();
+                        //todo videos anzeigen.
+                    }
+                });
             }
         });
+
+
 
     }
 
@@ -176,7 +188,6 @@ public class DetailedMovieData extends AppCompatActivity
                 }
             });
         }
-
     }
 
     private MovieDataEntry getFavoriteMovie(int mDetailedMovieId) {
