@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -17,7 +19,8 @@ import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
-import com.pinschaneer.bertram.popularmovies.data.MovieVideoDataEntry;
+import com.pinschaneer.bertram.popularmovies.data.TrailerEntry;
+import com.pinschaneer.bertram.popularmovies.data.TrailerListAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -33,6 +36,9 @@ public class DetailedMovieDataActivity extends AppCompatActivity
     private int mDetailedMovieId;
     private DetailedMovieDataViewModel viewModel;
 
+    private RecyclerView recyclerViewVideos;
+    private TrailerListAdapter videoListAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +53,14 @@ public class DetailedMovieDataActivity extends AppCompatActivity
             }
         }
 
+        recyclerViewVideos = findViewById(R.id.recyclerview_videos);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerViewVideos.setLayoutManager(layoutManager);
+        recyclerViewVideos.setHasFixedSize(true);
+        videoListAdapter = new TrailerListAdapter();
+        recyclerViewVideos.setAdapter(videoListAdapter);
+
+
         viewModel = ViewModelProviders.of(this).get(DetailedMovieDataViewModel.class);
         if (!viewModel.hasData()) {
             viewModel.init(mDetailedMovieId);
@@ -57,12 +71,11 @@ public class DetailedMovieDataActivity extends AppCompatActivity
             @Override
             public void onChanged(@Nullable MovieDetailData movieDetails) {
                 DetailedMovieDataActivity.this.populateDisplayInformation(movieDetails);
-                movieDetails.getVideos().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<MovieVideoDataEntry>>() {
+                movieDetails.getVideos().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<TrailerEntry>>()
+                {
                     @Override
-                    public void onChanged(
-                            @Nullable ArrayList<MovieVideoDataEntry> movieVideoDataEntries) {
-                        int count = movieVideoDataEntries.size();
-                        //todo videos anzeigen.
+                    public void onChanged(@Nullable ArrayList<TrailerEntry> trailerEntries) {
+                        videoListAdapter.setTrailerEntries(trailerEntries);
                     }
                 });
             }

@@ -1,11 +1,9 @@
 package com.pinschaneer.bertram.popularmovies.data;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MovieVideoDataEntry
+public class TrailerEntry
 {
     private static final String MDB_ID = "id";
     private static final String MDB_KEY = "key";
@@ -18,26 +16,26 @@ public class MovieVideoDataEntry
     private String site;
     private String type;
 
-    public static MovieVideoDataEntry crateMovieDetailVideoData(JSONObject jsonData) {
-        MovieVideoDataEntry videoData = new MovieVideoDataEntry();
+    public static TrailerEntry crateTrailerData(JSONObject jsonData) {
+        TrailerEntry trailer = new TrailerEntry();
         try {
             if (jsonData.has(MDB_ID)) {
-                videoData.setId(jsonData.getString(MDB_ID));
+                trailer.setId(jsonData.getString(MDB_ID));
             }
             else {
                 return null;
             }
             if (jsonData.has(MDB_KEY)) {
-                videoData.setKey(jsonData.getString(MDB_KEY));
+                trailer.setKey(jsonData.getString(MDB_KEY));
             }
             if (jsonData.has(MDB_NAME)) {
-                videoData.setName(jsonData.getString(MDB_NAME));
+                trailer.setName(jsonData.getString(MDB_NAME));
             }
             if (jsonData.has(MDB_SITE)) {
-                videoData.setSite(jsonData.getString(MDB_SITE));
+                trailer.setSite(jsonData.getString(MDB_SITE));
             }
             if (jsonData.has(MDB_TYPE)) {
-                videoData.setType(jsonData.getString(MDB_TYPE));
+                trailer.setType(jsonData.getString(MDB_TYPE));
             }
 
         }
@@ -45,7 +43,7 @@ public class MovieVideoDataEntry
             e.printStackTrace();
             return null;
         }
-        return videoData;
+        return trailer;
     }
 
     public String getId() {

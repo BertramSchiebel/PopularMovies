@@ -10,7 +10,6 @@ import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
 import com.pinschaneer.bertram.popularmovies.data.FavoriteMovieDataBase;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
-import com.pinschaneer.bertram.popularmovies.data.MovieVideoDataEntry;
 import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
 
 import java.io.IOException;

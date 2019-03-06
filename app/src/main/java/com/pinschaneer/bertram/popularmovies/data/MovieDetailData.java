@@ -2,7 +2,6 @@ package com.pinschaneer.bertram.popularmovies.data;
 
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
@@ -39,7 +38,7 @@ public class MovieDetailData {
     private String posterPath;
     private double averageVote;
     private int id;
-    private MutableLiveData<ArrayList<MovieVideoDataEntry>> videos;
+    private MutableLiveData<ArrayList<TrailerEntry>> videos;
 
 
     public MovieDetailData(){
@@ -107,7 +106,7 @@ public class MovieDetailData {
         this.id = id;
     }
 
-    public MutableLiveData<ArrayList<MovieVideoDataEntry>> getVideos() {
+    public MutableLiveData<ArrayList<TrailerEntry>> getVideos() {
         return videos;
     }
 
@@ -190,17 +189,17 @@ public class MovieDetailData {
         new RetrieveVideoDataTask().execute(command);
     }
 
-    private ArrayList<MovieVideoDataEntry> parseGetVideoResonse(String response) {
-        ArrayList<MovieVideoDataEntry> result = new ArrayList<>();
+    private ArrayList<TrailerEntry> parseGetVideoResonse(String response) {
+        ArrayList<TrailerEntry> result = new ArrayList<>();
         try {
             JSONObject jasonResponse = new JSONObject(response);
             if (jasonResponse.has(MDB_RESULTS)) {
                 JSONArray resultList = jasonResponse.getJSONArray(MDB_RESULTS);
                 for (int i = 0; i < resultList.length(); i++) {
                     JSONObject jsonEntry = resultList.getJSONObject(i);
-                    MovieVideoDataEntry videoDataEntry = MovieVideoDataEntry.crateMovieDetailVideoData(jsonEntry);
-                    if(videoDataEntry != null){
-                        result.add(videoDataEntry);
+                    TrailerEntry trailer = TrailerEntry.crateTrailerData(jsonEntry);
+                    if (trailer != null) {
+                        result.add(trailer);
                     }
                 }
             }
@@ -247,7 +246,7 @@ public class MovieDetailData {
         @Override
         protected void onPostExecute(String response) {
             if (!response.isEmpty()){
-                ArrayList<MovieVideoDataEntry> videoList = parseGetVideoResonse(response);
+                ArrayList<TrailerEntry> videoList = parseGetVideoResonse(response);
                 if (videoList != null) {
                     videos.postValue(videoList);
                 }
