@@ -10,11 +10,17 @@ import android.widget.TextView;
 
 import com.pinschaneer.bertram.popularmovies.R;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.DetailedVideoListAdapterViewHolder>
 {
     private ArrayList<TrailerEntry> trailerEntries;
+    private final TrailerListAdapterOnClickHandler clickHandler;
+
+    public TrailerListAdapter(TrailerListAdapterOnClickHandler onClickHandler) {
+        clickHandler = onClickHandler;
+    }
 
     @NonNull
     @Override
@@ -33,6 +39,7 @@ public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.
         notifyDataSetChanged();
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull DetailedVideoListAdapterViewHolder holder, int position) {
         TrailerEntry trailer = trailerEntries.get(position);
@@ -47,13 +54,32 @@ public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.
         return trailerEntries.size();
     }
 
-    public class DetailedVideoListAdapterViewHolder extends RecyclerView.ViewHolder
+
+    public interface TrailerListAdapterOnClickHandler
+    {
+        void onClick(TrailerEntry trailerData) throws URISyntaxException;
+    }
+
+    public class DetailedVideoListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public final TextView titelTextView;
 
         public DetailedVideoListAdapterViewHolder(View itemView) {
             super(itemView);
             titelTextView = itemView.findViewById(R.id.list_movieTitel);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+            TrailerEntry tralerData = trailerEntries.get(position);
+            try {
+                clickHandler.onClick(tralerData);
+            }
+            catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

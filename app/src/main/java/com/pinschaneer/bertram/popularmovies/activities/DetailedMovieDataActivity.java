@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.pinschaneer.bertram.popularmovies.R;
@@ -30,7 +32,7 @@ import java.util.Locale;
 /**
  * This class is responsible for the detailed view of movie
  */
-public class DetailedMovieDataActivity extends AppCompatActivity
+public class DetailedMovieDataActivity extends AppCompatActivity implements TrailerListAdapter.TrailerListAdapterOnClickHandler
 {
 
     private int mDetailedMovieId;
@@ -57,7 +59,7 @@ public class DetailedMovieDataActivity extends AppCompatActivity
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewVideos.setLayoutManager(layoutManager);
         recyclerViewVideos.setHasFixedSize(true);
-        videoListAdapter = new TrailerListAdapter();
+        videoListAdapter = new TrailerListAdapter(this);
         recyclerViewVideos.setAdapter(videoListAdapter);
 
 
@@ -238,4 +240,16 @@ public class DetailedMovieDataActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onClick(TrailerEntry trailerData) {
+        if (trailerData.isYouTubeVideo()) {
+            Uri uri = trailerData.getYouTubeUri();
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
+        else {
+            Toast toast = Toast.makeText(this, "Is not YouTube Video", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
 }

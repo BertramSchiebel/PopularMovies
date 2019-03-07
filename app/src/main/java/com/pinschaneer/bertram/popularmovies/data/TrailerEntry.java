@@ -1,5 +1,7 @@
 package com.pinschaneer.bertram.popularmovies.data;
 
+import android.net.Uri;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -84,5 +86,14 @@ public class TrailerEntry
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean isYouTubeVideo() {
+        return getSite().equals("YouTube");
+    }
+
+    public Uri getYouTubeUri() {
+        Uri uri = Uri.parse("vnd.youtube://" + getKey());
+        return uri;
     }
 }
