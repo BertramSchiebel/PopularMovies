@@ -71,6 +71,7 @@ class DetailedMovieDataViewModel extends AndroidViewModel
                 favoriteMovies = movieDataBase.movieDataDao().getAllMovieData();
             }
         });
+
     }
 
     /**

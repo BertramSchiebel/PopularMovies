@@ -4,32 +4,42 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
+import com.pinschaneer.bertram.popularmovies.data.TrailerEntry;
+import com.pinschaneer.bertram.popularmovies.data.TrailerListAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
  * This class is responsible for the detailed view of movie
  */
-public class DetailedMovieData extends AppCompatActivity
+public class DetailedMovieDataActivity extends AppCompatActivity implements TrailerListAdapter.TrailerListAdapterOnClickHandler
 {
 
     private int mDetailedMovieId;
     private DetailedMovieDataViewModel viewModel;
+
+    private RecyclerView recyclerViewVideos;
+    private TrailerListAdapter videoListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +55,14 @@ public class DetailedMovieData extends AppCompatActivity
             }
         }
 
+        recyclerViewVideos = findViewById(R.id.recyclerview_videos);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerViewVideos.setLayoutManager(layoutManager);
+        recyclerViewVideos.setHasFixedSize(true);
+        videoListAdapter = new TrailerListAdapter(this);
+        recyclerViewVideos.setAdapter(videoListAdapter);
+
+
         viewModel = ViewModelProviders.of(this).get(DetailedMovieDataViewModel.class);
         if (!viewModel.hasData()) {
             viewModel.init(mDetailedMovieId);
@@ -54,9 +72,18 @@ public class DetailedMovieData extends AppCompatActivity
         {
             @Override
             public void onChanged(@Nullable MovieDetailData movieDetails) {
-                DetailedMovieData.this.populateDisplayInformation(movieDetails);
+                DetailedMovieDataActivity.this.populateDisplayInformation(movieDetails);
+                movieDetails.getVideos().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<TrailerEntry>>()
+                {
+                    @Override
+                    public void onChanged(@Nullable ArrayList<TrailerEntry> trailerEntries) {
+                        videoListAdapter.setTrailerEntries(trailerEntries);
+                    }
+                });
             }
         });
+
+
 
     }
 
@@ -176,7 +203,6 @@ public class DetailedMovieData extends AppCompatActivity
                 }
             });
         }
-
     }
 
     private MovieDataEntry getFavoriteMovie(int mDetailedMovieId) {
@@ -214,4 +240,16 @@ public class DetailedMovieData extends AppCompatActivity
     }
 
 
+    @Override
+    public void onClick(TrailerEntry trailerData) {
+        if (trailerData.isYouTubeVideo()) {
+            Uri uri = trailerData.getYouTubeUri();
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
+        else {
+            Toast toast = Toast.makeText(this, "Is not YouTube Video", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
 }

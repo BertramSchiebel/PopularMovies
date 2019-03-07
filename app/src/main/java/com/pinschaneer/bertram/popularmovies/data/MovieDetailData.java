@@ -1,11 +1,21 @@
 package com.pinschaneer.bertram.popularmovies.data;
 
 
+import android.annotation.SuppressLint;
+import android.arch.lifecycle.MutableLiveData;
+import android.os.AsyncTask;
+
+import com.pinschaneer.bertram.popularmovies.utilities.NetworkUtils;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -15,16 +25,25 @@ import java.util.Locale;
  */
 public class MovieDetailData {
     private static final String MDB_TITLE = "title";
+    private static final String MDB_ID = "id";
     private static final String MDB_OVERVIEW = "overview";
     private static final String MDB_RELEASE_DATE = "release_date";
     private static final String MDB_POSTER_PATH = "poster_path";
     private static final String MDB_VOTE_AVERAGE = "vote_average";
+    private static final String MDB_RESULTS = "results";
 
-    private String mTitle;
-    private String mDescription;
-    private Date mReleaseDate;
-    private String mPosterPath;
-    private double mAverageVote;
+    private String title;
+    private String description;
+    private Date releaseDate;
+    private String posterPath;
+    private double averageVote;
+    private int id;
+    private MutableLiveData<ArrayList<TrailerEntry>> videos;
+
+
+    public MovieDetailData(){
+        videos = new MutableLiveData<>();
+    }
 
     /**
      * Factory method to parse the given JSON string and returns
@@ -39,6 +58,9 @@ public class MovieDetailData {
             JSONObject movieDataJSON = new JSONObject(jsonData);
             if (movieDataJSON.has(MDB_TITLE)) {
                 movieDetailData.setTitle(movieDataJSON.getString(MDB_TITLE));
+            }
+            if (movieDataJSON.has(MDB_ID)) {
+                movieDetailData.setId(movieDataJSON.getInt(MDB_ID));
             }
 
             if (movieDataJSON.has(MDB_OVERVIEW)) {
@@ -66,6 +88,8 @@ public class MovieDetailData {
                 movieDetailData.setAverageVote(movieDataJSON.getDouble(MDB_VOTE_AVERAGE));
             }
 
+            movieDetailData.loadMovieVideos(movieDetailData.getId());
+
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -74,12 +98,23 @@ public class MovieDetailData {
         return movieDetailData;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public MutableLiveData<ArrayList<TrailerEntry>> getVideos() {
+        return videos;
+    }
 
     /**
      * @return gets the release Date of the movie
      */
     public Date getReleaseDate() {
-        return mReleaseDate;
+        return releaseDate;
     }
 
     /**
@@ -88,24 +123,24 @@ public class MovieDetailData {
      * @param releaseDate the given date
      */
     private void setReleaseDate(Date releaseDate) {
-        this.mReleaseDate = releaseDate;
+        this.releaseDate = releaseDate;
     }
 
-    public String getPosterPath(){return mPosterPath;}
+    public String getPosterPath(){return posterPath;}
     /**
      * Sets the path to image of the movie poster
      *
      * @param posterPath the given path
      */
     private void setPosterPath(String posterPath) {
-        this.mPosterPath = posterPath;
+        this.posterPath = posterPath;
     }
 
     /**
      * @return the avarage vote of the movie
      */
     public double getAverageVote() {
-        return mAverageVote;
+        return averageVote;
     }
 
     /**
@@ -114,14 +149,14 @@ public class MovieDetailData {
      * @param averageVote the given average vote
      */
     private void setAverageVote(double averageVote) {
-        this.mAverageVote = averageVote;
+        this.averageVote = averageVote;
     }
 
     /**
      * @return Gets the title of the movie details
      */
     public String getTitle() {
-        return mTitle;
+        return title;
     }
 
 
@@ -130,14 +165,14 @@ public class MovieDetailData {
      * @param title the given title
      */
     private void setTitle(String title) {
-        this.mTitle = title;
+        this.title = title;
     }
 
     /**
      * @return Gets the description of the movie details
      */
     public String getDescription() {
-        return mDescription;
+        return description;
     }
 
     /**
@@ -145,7 +180,35 @@ public class MovieDetailData {
      * @param description the given description
      */
     private void setDescription(String description) {
-        this.mDescription = description;
+        this.description = description;
+    }
+
+    private void loadMovieVideos(int movieId){
+
+        String command = "movie/" + movieId+"/videos";
+        new RetrieveVideoDataTask().execute(command);
+    }
+
+    private ArrayList<TrailerEntry> parseGetVideoResonse(String response) {
+        ArrayList<TrailerEntry> result = new ArrayList<>();
+        try {
+            JSONObject jasonResponse = new JSONObject(response);
+            if (jasonResponse.has(MDB_RESULTS)) {
+                JSONArray resultList = jasonResponse.getJSONArray(MDB_RESULTS);
+                for (int i = 0; i < resultList.length(); i++) {
+                    JSONObject jsonEntry = resultList.getJSONObject(i);
+                    TrailerEntry trailer = TrailerEntry.crateTrailerData(jsonEntry);
+                    if (trailer != null) {
+                        result.add(trailer);
+                    }
+                }
+            }
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
 
@@ -154,11 +217,40 @@ public class MovieDetailData {
      * @return the complete URL if the movie has a path to a image otherwise a empty string
      */
     public String getPosterImageUrl() {
-        if (mPosterPath != null && !mPosterPath.isEmpty()) {
+        if (posterPath != null && !posterPath.isEmpty()) {
 
-            return "https://image.tmdb.org/t/p/w500" + mPosterPath;
+            return "https://image.tmdb.org/t/p/w500" + posterPath;
         } else {
             return "";
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class RetrieveVideoDataTask extends AsyncTask<String,Void,String>{
+
+        @Override
+        protected String doInBackground(String... params) {
+            String command = params[0];
+            URL url = NetworkUtils.buildUrl(command, "1");
+            String response;
+            try {
+                response = NetworkUtils.getResponseFromHttpUrl(url);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                return "";
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            if (!response.isEmpty()){
+                ArrayList<TrailerEntry> videoList = parseGetVideoResonse(response);
+                if (videoList != null) {
+                    videos.postValue(videoList);
+                }
+            }
         }
     }
 

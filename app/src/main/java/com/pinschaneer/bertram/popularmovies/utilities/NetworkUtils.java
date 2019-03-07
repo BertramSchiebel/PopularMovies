@@ -55,7 +55,6 @@ public class NetworkUtils {
 
     }
 
-
     /**
      * This method opens a Network connection to the given Url an returns the response of this Url
      *

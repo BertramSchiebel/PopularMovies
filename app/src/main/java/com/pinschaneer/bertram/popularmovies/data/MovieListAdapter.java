@@ -82,31 +82,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     }
 
 
-//    /**
-//     * Sets the data in the list of the adapter
-//     * @param data the new data
-//     */
-//    public void addMovieData(List<MovieDataEntry> data) {
-//        if (mMovieDataList == null) {
-//            mMovieDataList = data;
-//        } else {
-//            mMovieDataList.addAll(data);
-//        }
-//        notifyDataSetChanged();
-//    }
-
-
-//    /**
-//     *   clear the list of the adapter
-//     */
-//    public void clearMovieData() {
-//        if (mMovieDataList == null) {
-//            return;
-//        }
-//        mMovieDataList.clear();
-//        notifyDataSetChanged();
-//    }
-
     /**
      * The interface that receives onClick messages.
      */
