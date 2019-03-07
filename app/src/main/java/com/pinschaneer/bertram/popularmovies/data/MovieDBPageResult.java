@@ -37,13 +37,13 @@ public class MovieDBPageResult {
             JSONObject listSearchResult = new JSONObject(jsonDataString);
 
             if (listSearchResult.has(MDB_RESULTS)) {
-                JSONArray resultList = listSearchResult.getJSONArray(MDB_RESULTS);
-                for (int i = 0; i < resultList.length(); i++) {
-                    JSONObject entryJson = resultList.getJSONObject(i);
-                    MovieDataEntry movieResultEntry = new MovieDataEntry(entryJson.toString());
-                    if (movieResultEntry.getId() > 0) {
-                        movieDBPageResult.getResults().add(movieResultEntry);
-                    }
+                    JSONArray resultList = listSearchResult.getJSONArray(MDB_RESULTS);
+                    for (int i = 0; i < resultList.length(); i++) {
+                        JSONObject entryJson = resultList.getJSONObject(i);
+                        MovieDataEntry movieResultEntry = new MovieDataEntry(entryJson.toString());
+                        if (movieResultEntry.getId() > 0) {
+                            movieDBPageResult.getResults().add(movieResultEntry);
+                        }
                 }
 
             } else {

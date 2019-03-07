@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     @Override
     public void onClick(MovieDataEntry movieData) {
         Context context = this;
-        Intent startDetailedMovieActivity = new Intent(context, DetailedMovieData.class);
+        Intent startDetailedMovieActivity = new Intent(context, DetailedMovieDataActivity.class);
         startDetailedMovieActivity.putExtra(Intent.EXTRA_TEXT, Integer.toString(movieData.getId()));
         startActivity(startDetailedMovieActivity);
     }
