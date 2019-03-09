@@ -40,10 +40,8 @@ public class DetailedMovieDataActivity extends AppCompatActivity implements Trai
     private int mDetailedMovieId;
     private DetailedMovieDataViewModel viewModel;
 
-    private RecyclerView recyclerViewVideos;
     private TrailerListAdapter videoListAdapter;
 
-    private RecyclerView recyclerViewReviews;
     private ReviewListAdapter reviewListAdapter;
 
 
@@ -61,14 +59,14 @@ public class DetailedMovieDataActivity extends AppCompatActivity implements Trai
             }
         }
 
-        recyclerViewVideos = findViewById(R.id.recyclerview_videos);
+        RecyclerView recyclerViewVideos = findViewById(R.id.recyclerview_videos);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewVideos.setLayoutManager(layoutManager);
         recyclerViewVideos.setHasFixedSize(true);
         videoListAdapter = new TrailerListAdapter(this);
         recyclerViewVideos.setAdapter(videoListAdapter);
 
-        recyclerViewReviews = findViewById(R.id.recyclerview_reviews);
+        RecyclerView recyclerViewReviews = findViewById(R.id.recyclerview_reviews);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewReviews.setLayoutManager(layoutManager);
         recyclerViewReviews.setHasFixedSize(true);
@@ -86,21 +84,23 @@ public class DetailedMovieDataActivity extends AppCompatActivity implements Trai
             @Override
             public void onChanged(@Nullable MovieDetailData movieDetails) {
                 DetailedMovieDataActivity.this.populateDisplayInformation(movieDetails);
-                movieDetails.getVideos().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<TrailerEntry>>()
-                {
-                    @Override
-                    public void onChanged(@Nullable ArrayList<TrailerEntry> trailerEntries) {
-                        videoListAdapter.setTrailerEntries(trailerEntries);
-                    }
-                });
+                if (movieDetails != null) {
+                    movieDetails.getVideos().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<TrailerEntry>>()
+                    {
+                        @Override
+                        public void onChanged(@Nullable ArrayList<TrailerEntry> trailerEntries) {
+                            videoListAdapter.setTrailerEntries(trailerEntries);
+                        }
+                    });
 
-                movieDetails.getReviews().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<ReviewEntry>>()
-                {
-                    @Override
-                    public void onChanged(@Nullable ArrayList<ReviewEntry> reviewEntries) {
-                        reviewListAdapter.setReviewEntries(reviewEntries);
-                    }
-                });
+                    movieDetails.getReviews().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<ReviewEntry>>()
+                    {
+                        @Override
+                        public void onChanged(@Nullable ArrayList<ReviewEntry> reviewEntries) {
+                            reviewListAdapter.setReviewEntries(reviewEntries);
+                        }
+                    });
+                }
             }
         });
 

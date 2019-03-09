@@ -17,7 +17,7 @@ public class MovieDBPageResult {
 
     private static final String MDB_RESULTS = "results";
 
-    private ArrayList<MovieDataEntry> mResults;
+    private final ArrayList<MovieDataEntry> mResults;
 
     private MovieDBPageResult() {
         mResults = new ArrayList<>();

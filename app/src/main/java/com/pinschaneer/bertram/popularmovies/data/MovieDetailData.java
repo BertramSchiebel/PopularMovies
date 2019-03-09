@@ -38,13 +38,11 @@ public class MovieDetailData {
     private String posterPath;
     private double averageVote;
     private int id;
-    private MutableLiveData<ArrayList<TrailerEntry>> videos;
+    private final MutableLiveData<ArrayList<TrailerEntry>> videos = new MutableLiveData<>();
 
-    private MutableLiveData<ArrayList<ReviewEntry>> reviews;
+    private final MutableLiveData<ArrayList<ReviewEntry>> reviews = new MutableLiveData<>();
 
-    public MovieDetailData(){
-        videos = new MutableLiveData<>();
-        reviews = new MutableLiveData<>();
+    private MovieDetailData(){
     }
 
     /**
@@ -110,11 +108,11 @@ public class MovieDetailData {
         new RetrieveReviewDataTask().execute(command);
     }
 
-    public int getId() {
+    private int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(int id) {
         this.id = id;
     }
 
@@ -149,7 +147,7 @@ public class MovieDetailData {
     }
 
     /**
-     * @return the avarage vote of the movie
+     * @return the Average vote of the movie
      */
     public double getAverageVote() {
         return averageVote;
@@ -201,7 +199,7 @@ public class MovieDetailData {
         new RetrieveVideoDataTask().execute(command);
     }
 
-    private ArrayList<ReviewEntry> parseReviewsResonse(String response) {
+    private ArrayList<ReviewEntry> parseReviewsResponse(String response) {
         ArrayList<ReviewEntry> result = new ArrayList<>();
         try {
             JSONObject jasonResponse = new JSONObject(response);
@@ -222,7 +220,7 @@ public class MovieDetailData {
         return result;
     }
 
-    private ArrayList<TrailerEntry> parseGetVideoResonse(String response) {
+    private ArrayList<TrailerEntry> parseGetVideoResponse(String response) {
         ArrayList<TrailerEntry> result = new ArrayList<>();
         try {
             JSONObject jasonResponse = new JSONObject(response);
@@ -279,7 +277,7 @@ public class MovieDetailData {
         @Override
         protected void onPostExecute(String response) {
             if (!response.isEmpty()){
-                ArrayList<TrailerEntry> videoList = parseGetVideoResonse(response);
+                ArrayList<TrailerEntry> videoList = parseGetVideoResponse(response);
                 if (videoList != null) {
                     videos.postValue(videoList);
                 }
@@ -287,6 +285,7 @@ public class MovieDetailData {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class RetrieveReviewDataTask extends AsyncTask<String, Void, String>
     {
 
@@ -308,7 +307,7 @@ public class MovieDetailData {
         @Override
         protected void onPostExecute(String response) {
             if (!response.isEmpty()) {
-                ArrayList<ReviewEntry> reviewList = parseReviewsResonse(response);
+                ArrayList<ReviewEntry> reviewList = parseReviewsResponse(response);
                 if (reviewList != null) {
                     reviews.postValue(reviewList);
                 }

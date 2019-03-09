@@ -41,23 +41,23 @@ public class ReviewEntry
         return id;
     }
 
-    public void setId(String id) {
+    private void setId(String id) {
         this.id = id;
     }
 
-    public String getAuthor() {
+    String getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    private void setAuthor(String author) {
         this.author = author;
     }
 
-    public String getContent() {
+    String getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    private void setContent(String content) {
         this.content = content;
     }
 }

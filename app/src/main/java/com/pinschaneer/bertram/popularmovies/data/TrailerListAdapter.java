@@ -57,14 +57,14 @@ public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.
 
     public interface TrailerListAdapterOnClickHandler
     {
-        void onClick(TrailerEntry trailerData) throws URISyntaxException;
+        void onClick(TrailerEntry trailerData);
     }
 
     public class DetailedVideoListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        public final TextView titelTextView;
+        final TextView titelTextView;
 
-        public DetailedVideoListAdapterViewHolder(View itemView) {
+        DetailedVideoListAdapterViewHolder(View itemView) {
             super(itemView);
             titelTextView = itemView.findViewById(R.id.list_movieTitel);
             itemView.setOnClickListener(this);
@@ -74,12 +74,7 @@ public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.
         public void onClick(View view) {
             int position = getAdapterPosition();
             TrailerEntry tralerData = trailerEntries.get(position);
-            try {
-                clickHandler.onClick(tralerData);
-            }
-            catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            clickHandler.onClick(tralerData);
         }
     }
 }

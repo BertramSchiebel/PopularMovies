@@ -99,7 +99,7 @@ public class MovieDataEntry
      *
      * @return a URL string to the complete path
      */
-    public String getPosterImageUrl() {
+    String getPosterImageUrl() {
         return "https://image.tmdb.org/t/p/w500" + posterPath;
     }
 
@@ -107,47 +107,47 @@ public class MovieDataEntry
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(int id) {
         this.id = id;
     }
 
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    private void setTitle(String title) {
         this.title = title;
     }
 
-    public String getPosterPath() {
+    String getPosterPath() {
         return posterPath;
     }
 
-    public void setPosterPath(String posterPath) {
+    private void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
     }
 
-    public String getDescription() {
+    String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    private void setDescription(String description) {
         this.description = description;
     }
 
-    public double getAverageVote() {
+    double getAverageVote() {
         return averageVote;
     }
 
-    public void setAverageVote(double averageVote) {
+    private void setAverageVote(double averageVote) {
         this.averageVote = averageVote;
     }
 
-    public Date getReleaseDate() {
+    Date getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    private void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
     }
 }
