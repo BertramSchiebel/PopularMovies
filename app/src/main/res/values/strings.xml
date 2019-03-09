@@ -16,6 +16,7 @@
     <string name="tb_mark_as_favorite_off_text">Mark as Favorite</string>
     <string name="tb_mark_as_favorite_on_text">Is marked as Favorite</string>
     <string name="trailer_label">Trailer</string>
+    <string name="review_label">Reviews</string>
     <string-array name="movie_list_queries">
         <item>most popular</item>
         <item>highest rated</item>

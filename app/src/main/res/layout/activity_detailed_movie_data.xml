@@ -124,11 +124,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
                 android:paddingBottom="16dp"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/label_movie_description"
                 app:layout_constraintTop_toBottomOf="@+id/label_movie_description"
                 tools:text="@tools:sample/lorem/random"/>
@@ -162,10 +162,11 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerview_videos"
-                android:layout_width="375dp"
-                android:layout_height="150dp"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
+                android:maxHeight="250dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/label_trailer_list"
                 app:layout_constraintTop_toBottomOf="@+id/label_trailer_list"/>
@@ -182,6 +183,29 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/tv_movie_detail_description"
                 app:layout_constraintTop_toBottomOf="@+id/tv_movie_detail_description"/>
+
+            <TextView
+                android:id="@+id/label_review_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/review_label"
+                android:textAlignment="viewStart"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/recyclerview_videos"
+                app:layout_constraintTop_toBottomOf="@+id/recyclerview_videos"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview_reviews"
+                android:layout_width="375dp"
+                android:layout_height="150dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/label_review_list"
+                app:layout_constraintTop_toBottomOf="@+id/label_review_list"/>
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
