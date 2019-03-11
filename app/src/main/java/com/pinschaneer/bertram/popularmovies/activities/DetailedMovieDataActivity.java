@@ -62,14 +62,14 @@ public class DetailedMovieDataActivity extends AppCompatActivity implements Trai
         RecyclerView recyclerViewVideos = findViewById(R.id.recyclerview_videos);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewVideos.setLayoutManager(layoutManager);
-        recyclerViewVideos.setHasFixedSize(true);
+        recyclerViewVideos.setHasFixedSize(false);
         videoListAdapter = new TrailerListAdapter(this);
         recyclerViewVideos.setAdapter(videoListAdapter);
 
         RecyclerView recyclerViewReviews = findViewById(R.id.recyclerview_reviews);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewReviews.setLayoutManager(layoutManager);
-        recyclerViewReviews.setHasFixedSize(true);
+        recyclerViewReviews.setHasFixedSize(false);
         reviewListAdapter = new ReviewListAdapter();
         recyclerViewReviews.setAdapter(reviewListAdapter);
 
