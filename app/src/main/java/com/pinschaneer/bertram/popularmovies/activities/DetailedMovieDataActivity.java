@@ -21,6 +21,8 @@ import com.pinschaneer.bertram.popularmovies.R;
 import com.pinschaneer.bertram.popularmovies.data.DataBaseExecutor;
 import com.pinschaneer.bertram.popularmovies.data.MovieDataEntry;
 import com.pinschaneer.bertram.popularmovies.data.MovieDetailData;
+import com.pinschaneer.bertram.popularmovies.data.ReviewEntry;
+import com.pinschaneer.bertram.popularmovies.data.ReviewListAdapter;
 import com.pinschaneer.bertram.popularmovies.data.TrailerEntry;
 import com.pinschaneer.bertram.popularmovies.data.TrailerListAdapter;
 import com.squareup.picasso.Picasso;
@@ -38,8 +40,10 @@ public class DetailedMovieDataActivity extends AppCompatActivity implements Trai
     private int mDetailedMovieId;
     private DetailedMovieDataViewModel viewModel;
 
-    private RecyclerView recyclerViewVideos;
     private TrailerListAdapter videoListAdapter;
+
+    private ReviewListAdapter reviewListAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +59,19 @@ public class DetailedMovieDataActivity extends AppCompatActivity implements Trai
             }
         }
 
-        recyclerViewVideos = findViewById(R.id.recyclerview_videos);
+        RecyclerView recyclerViewVideos = findViewById(R.id.recyclerview_videos);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewVideos.setLayoutManager(layoutManager);
-        recyclerViewVideos.setHasFixedSize(true);
+        recyclerViewVideos.setHasFixedSize(false);
         videoListAdapter = new TrailerListAdapter(this);
         recyclerViewVideos.setAdapter(videoListAdapter);
+
+        RecyclerView recyclerViewReviews = findViewById(R.id.recyclerview_reviews);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerViewReviews.setLayoutManager(layoutManager);
+        recyclerViewReviews.setHasFixedSize(false);
+        reviewListAdapter = new ReviewListAdapter();
+        recyclerViewReviews.setAdapter(reviewListAdapter);
 
 
         viewModel = ViewModelProviders.of(this).get(DetailedMovieDataViewModel.class);
@@ -73,13 +84,23 @@ public class DetailedMovieDataActivity extends AppCompatActivity implements Trai
             @Override
             public void onChanged(@Nullable MovieDetailData movieDetails) {
                 DetailedMovieDataActivity.this.populateDisplayInformation(movieDetails);
-                movieDetails.getVideos().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<TrailerEntry>>()
-                {
-                    @Override
-                    public void onChanged(@Nullable ArrayList<TrailerEntry> trailerEntries) {
-                        videoListAdapter.setTrailerEntries(trailerEntries);
-                    }
-                });
+                if (movieDetails != null) {
+                    movieDetails.getVideos().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<TrailerEntry>>()
+                    {
+                        @Override
+                        public void onChanged(@Nullable ArrayList<TrailerEntry> trailerEntries) {
+                            videoListAdapter.setTrailerEntries(trailerEntries);
+                        }
+                    });
+
+                    movieDetails.getReviews().observe(DetailedMovieDataActivity.this, new Observer<ArrayList<ReviewEntry>>()
+                    {
+                        @Override
+                        public void onChanged(@Nullable ArrayList<ReviewEntry> reviewEntries) {
+                            reviewListAdapter.setReviewEntries(reviewEntries);
+                        }
+                    });
+                }
             }
         });
 
