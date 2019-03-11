@@ -42,7 +42,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
      *
      * @param parent   the parent of the view holder
      * @param viewType the type of the view
-     * @return A viewholder for the adapter
+     * @return A view holder for the adapter
      */
     @NonNull
     @Override
@@ -58,7 +58,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
      * Binds the data of list element to the items in the view holder
      *
      * @param holder   the view holder
-     * @param position the position of the elment in the list of the adapter
+     * @param position the position of the element in the list of the adapter
      */
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {

@@ -12,11 +12,9 @@ public class TrailerEntry
     private static final String MDB_NAME = "name";
     private static final String MDB_SITE = "site";
     private static final String MDB_TYPE = "type";
-    private String id;
     private String key;
     private String name;
     private String site;
-    private String type;
 
     public static TrailerEntry crateTrailerData(JSONObject jsonData) {
         TrailerEntry trailer = new TrailerEntry();
@@ -48,44 +46,36 @@ public class TrailerEntry
         return trailer;
     }
 
-    public String getId() {
-        return id;
+    private void setId(String id) {
+        String id1 = id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getKey() {
+    private String getKey() {
         return key;
     }
 
-    public void setKey(String key) {
+    private void setKey(String key) {
         this.key = key;
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
-    public String getSite() {
+    private String getSite() {
         return site;
     }
 
-    public void setSite(String site) {
+    private void setSite(String site) {
         this.site = site;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    private void setType(String type) {
+        String type1 = type;
     }
 
     public boolean isYouTubeVideo() {
@@ -93,7 +83,6 @@ public class TrailerEntry
     }
 
     public Uri getYouTubeUri() {
-        Uri uri = Uri.parse("vnd.youtube://" + getKey());
-        return uri;
+        return Uri.parse("vnd.youtube://" + getKey());
     }
 }

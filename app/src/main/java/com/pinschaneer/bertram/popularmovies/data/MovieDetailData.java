@@ -38,11 +38,11 @@ public class MovieDetailData {
     private String posterPath;
     private double averageVote;
     private int id;
-    private MutableLiveData<ArrayList<TrailerEntry>> videos;
+    private final MutableLiveData<ArrayList<TrailerEntry>> videos = new MutableLiveData<>();
 
+    private final MutableLiveData<ArrayList<ReviewEntry>> reviews = new MutableLiveData<>();
 
-    public MovieDetailData(){
-        videos = new MutableLiveData<>();
+    private MovieDetailData(){
     }
 
     /**
@@ -89,6 +89,7 @@ public class MovieDetailData {
             }
 
             movieDetailData.loadMovieVideos(movieDetailData.getId());
+            movieDetailData.loadReviews(movieDetailData.getId());
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -98,11 +99,20 @@ public class MovieDetailData {
         return movieDetailData;
     }
 
-    public int getId() {
+    public MutableLiveData<ArrayList<ReviewEntry>> getReviews() {
+        return reviews;
+    }
+
+    private void loadReviews(int movieId) {
+        String command = "movie/" + movieId + "/reviews";
+        new RetrieveReviewDataTask().execute(command);
+    }
+
+    private int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(int id) {
         this.id = id;
     }
 
@@ -137,7 +147,7 @@ public class MovieDetailData {
     }
 
     /**
-     * @return the avarage vote of the movie
+     * @return the Average vote of the movie
      */
     public double getAverageVote() {
         return averageVote;
@@ -189,7 +199,28 @@ public class MovieDetailData {
         new RetrieveVideoDataTask().execute(command);
     }
 
-    private ArrayList<TrailerEntry> parseGetVideoResonse(String response) {
+    private ArrayList<ReviewEntry> parseReviewsResponse(String response) {
+        ArrayList<ReviewEntry> result = new ArrayList<>();
+        try {
+            JSONObject jasonResponse = new JSONObject(response);
+            if (jasonResponse.has(MDB_RESULTS)) {
+                JSONArray resultList = jasonResponse.getJSONArray(MDB_RESULTS);
+                for (int i = 0; i < resultList.length(); i++) {
+                    JSONObject jsonEntry = resultList.getJSONObject(i);
+                    ReviewEntry review = ReviewEntry.crateReviewData(jsonEntry);
+                    if (review != null) {
+                        result.add(review);
+                    }
+                }
+            }
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private ArrayList<TrailerEntry> parseGetVideoResponse(String response) {
         ArrayList<TrailerEntry> result = new ArrayList<>();
         try {
             JSONObject jasonResponse = new JSONObject(response);
@@ -246,7 +277,7 @@ public class MovieDetailData {
         @Override
         protected void onPostExecute(String response) {
             if (!response.isEmpty()){
-                ArrayList<TrailerEntry> videoList = parseGetVideoResonse(response);
+                ArrayList<TrailerEntry> videoList = parseGetVideoResponse(response);
                 if (videoList != null) {
                     videos.postValue(videoList);
                 }
@@ -254,4 +285,33 @@ public class MovieDetailData {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
+    private class RetrieveReviewDataTask extends AsyncTask<String, Void, String>
+    {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String command = params[0];
+            URL url = NetworkUtils.buildUrl(command, "1");
+            String response;
+            try {
+                response = NetworkUtils.getResponseFromHttpUrl(url);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                return "";
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            if (!response.isEmpty()) {
+                ArrayList<ReviewEntry> reviewList = parseReviewsResponse(response);
+                if (reviewList != null) {
+                    reviews.postValue(reviewList);
+                }
+            }
+        }
+    }
 }
