@@ -13,23 +13,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:indeterminate="false"
-        tools:visibility="invisible" />
+        tools:visibility="invisible"/>
 
     <TextView
         android:id="@+id/detail_error_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:textSize="20sp"
+        android:layout_marginStart="8dp"
         android:gravity="center_vertical"
         android:text="@string/error_message"
-        android:visibility="invisible" />
+        android:textSize="20sp"
+        android:visibility="invisible"/>
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -163,7 +164,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerview_videos"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
                 android:maxHeight="250dp"
@@ -199,8 +200,8 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerview_reviews"
-                android:layout_width="375dp"
-                android:layout_height="150dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
