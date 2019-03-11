@@ -22,6 +22,8 @@ class MainViewModel extends AndroidViewModel
 {
     private String command = "movie/popular";
 
+    private String lastCommand="";
+
     private final MutableLiveData<ArrayList<MovieDataEntry>> webMovieDataEntries;
 
     public LiveData<List<MovieDataEntry>> getLocalMovieDataEntries() {
@@ -71,6 +73,9 @@ class MainViewModel extends AndroidViewModel
 
     public void loadMovieData() {
         if (!isCommandLocalDbCommand()) {
+            if(command.equals(lastCommand)) {
+                return;
+            }
             webMovieDataEntries.getValue().clear();
             new FetchMovieData().execute(command);
             isLoading.postValue(true);
@@ -129,6 +134,7 @@ class MainViewModel extends AndroidViewModel
         @Override
         protected void onPostExecute(MovieDBPageResult movieDBPageResult) {
             super.onPostExecute(movieDBPageResult);
+            lastCommand = command;
             isLoading.postValue(false);
         }
 
